@@ -72,7 +72,7 @@ private final class HistoryManagerViewController: UIViewController, UITableViewD
         searchBar.autocapitalizationType = .none
         searchBar.autocorrectionType = .no
         searchBar.searchBarStyle = .minimal
-        searchBar.placeholder = "Search History"
+        searchBar.placeholder = Strings.History.searchPlaceholder
         searchBar.delegate = self
         return searchBar
     }()
@@ -125,7 +125,7 @@ private final class HistoryManagerViewController: UIViewController, UITableViewD
     private let emptyStateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Your browsing history appears here"
+        label.text = Strings.History.empty
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textColor = .secondaryLabel
         label.textAlignment = .center
@@ -499,7 +499,7 @@ private final class HistoryManagerViewController: UIViewController, UITableViewD
     
     private func updateBackgroundView() {
         let hasHistory = !sections.isEmpty
-        emptyStateLabel.text = currentSearchTerm.isEmpty ? "Your browsing history appears here" : "No matching history"
+        emptyStateLabel.text = currentSearchTerm.isEmpty ? Strings.History.empty : Strings.History.noMatching
         tableView.backgroundView = hasHistory ? nil : emptyStateView
     }
     
@@ -526,11 +526,11 @@ private final class HistoryManagerViewController: UIViewController, UITableViewD
     private func sectionTitle(for date: Date) -> String {
         let calendar = Calendar.current
         if calendar.isDateInToday(date) {
-            return "Today"
+            return Strings.Common.today
         }
-        
+
         if calendar.isDateInYesterday(date) {
-            return "Yesterday"
+            return Strings.Common.yesterday
         }
         
         let formatter = DateFormatter()
@@ -705,7 +705,7 @@ private final class HistoryManagerViewController: UIViewController, UITableViewD
         _ tableView: UITableView,
         trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
+        let deleteAction = UIContextualAction(style: .destructive, title: Strings.Common.delete) { [weak self] _, _, completion in
             guard let self, let item = self.item(at: indexPath) else {
                 completion(false)
                 return

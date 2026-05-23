@@ -1,0 +1,192 @@
+name: iOS Build (Experimental)
+
+# Manual-only workflow that attempts the full Reynard build pipeline:
+# Cargo (idevice) -> Gecko (Firefox 151) -> xcodebuild Reynard.app
+#
+# IMPORTANT — read before running:
+#   * First run takes ~3-4 hours of macOS runner time (currently 10x billing).
+#   * Subsequent runs are faster if the Gecko build cache hits.
+#   * No code signing is configured here, so we cannot produce an installable
+#     IPA. The goal is to validate that source builds, not ship binaries.
+#   * GitHub-hosted runner disk is ~70 GB. Gecko + Firefox source + cache
+#     fits, but only just; expect occasional disk-pressure failures.
+#
+# If you need an installable IPA, sign on a local Mac or use a paid CI
+# service with code-signing support (Codemagic, Bitrise, Xcode Cloud).
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_gecko_build:
+        description: 'Build Gecko engine (uncheck to reuse cache only)'
+        type: boolean
+        default: true
+      run_xcodebuild:
+        description: 'Run xcodebuild after Gecko (unsigned)'
+        type: boolean
+        default: true
+
+jobs:
+  build:
+    name: Build Reynard.app
+    runs-on: macos-14
+    timeout-minutes: 350
+
+    env:
+      FIREFOX_RELEASE_TAG_FILE: engine/release.txt
+      MOZ_AUTOMATION: '1'
+      MACH_USE_SYSTEM_PYTHON: '1'
+      DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Read Firefox release tag
+        id: gecko-tag
+        run: |
+          TAG="$(tr -d '\000\r' < "${{ env.FIREFOX_RELEASE_TAG_FILE }}" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+          echo "Firefox tag: $TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Select latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios
+
+      - name: Install build dependencies
+        run: |
+          brew update
+          # ldid for ad-hoc signing of dylibs the Gecko build copies in.
+          brew install ldid
+
+      - name: Cache Firefox source submodule
+        id: cache-firefox-src
+        uses: actions/cache@v4
+        with:
+          path: engine/firefox
+          # Cache the entire shallow checkout at this exact tag. Switching
+          # tags invalidates automatically.
+          key: firefox-src-${{ steps.gecko-tag.outputs.tag }}-v1
+
+      - name: Cache support/idevice submodule
+        id: cache-idevice-src
+        uses: actions/cache@v4
+        with:
+          path: support/idevice
+          key: idevice-src-${{ hashFiles('.gitmodules') }}-v1
+
+      - name: Initialize idevice submodule if cache miss
+        if: steps.cache-idevice-src.outputs.cache-hit != 'true'
+        run: |
+          git submodule update --init --depth 1 support/idevice
+
+      - name: Fetch and checkout Firefox source if cache miss
+        if: steps.cache-firefox-src.outputs.cache-hit != 'true'
+        run: |
+          ./tools/development/update-gecko.sh
+
+      - name: Apply patches to Firefox source
+        run: |
+          # apply-patches.sh is interactive on conflict. In CI, we want a
+          # failure to be loud rather than block on stdin, so guard the
+          # state up front: if patches are already applied, skip.
+          if git -C engine/firefox diff --quiet; then
+            ./tools/development/apply-patches.sh < /dev/null
+          else
+            echo "engine/firefox already has working-tree modifications; assuming patches applied."
+          fi
+
+      - name: Cache Cargo registry and target
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            support/idevice/target
+          key: cargo-${{ runner.os }}-${{ hashFiles('support/idevice/**/Cargo.lock', 'support/idevice/**/Cargo.toml') }}
+          restore-keys: |
+            cargo-${{ runner.os }}-
+
+      - name: Build idevice FFI library
+        run: |
+          ./tools/development/build-idevice.sh
+
+      - name: Cache Gecko build directory
+        if: ${{ inputs.run_gecko_build }}
+        id: cache-gecko-build
+        uses: actions/cache@v4
+        with:
+          # Gecko's object dir lives at engine/firefox/obj-* by default.
+          # Caching the whole thing is expensive but the only way to make
+          # subsequent runs fast.
+          path: |
+            engine/firefox/obj-aarch64-apple-ios
+            ~/.mozbuild
+          key: gecko-build-${{ runner.os }}-${{ steps.gecko-tag.outputs.tag }}-${{ hashFiles('patches/**/*.patch', 'tools/development/build-gecko.sh') }}
+          restore-keys: |
+            gecko-build-${{ runner.os }}-${{ steps.gecko-tag.outputs.tag }}-
+
+      - name: Bootstrap mach (install mozbuild deps non-interactively)
+        if: ${{ inputs.run_gecko_build }}
+        working-directory: engine/firefox
+        run: |
+          ./mach --no-interactive bootstrap --application-choice mobile_android || true
+
+      - name: Build Gecko engine
+        if: ${{ inputs.run_gecko_build }}
+        run: |
+          ./tools/development/build-gecko.sh
+
+      - name: Inspect Gecko output
+        if: ${{ inputs.run_gecko_build }}
+        run: |
+          OBJDIR="engine/firefox/obj-aarch64-apple-ios"
+          if [ ! -d "$OBJDIR/dist/bin" ]; then
+            echo "::error::Gecko build did not produce $OBJDIR/dist/bin"
+            exit 1
+          fi
+          echo "Gecko dist/bin contents:"
+          ls -la "$OBJDIR/dist/bin" | head -40
+
+      - name: Run xcodebuild (unsigned)
+        if: ${{ inputs.run_xcodebuild }}
+        working-directory: browser
+        env:
+          GECKO_DIST: ${{ github.workspace }}/engine/firefox/obj-aarch64-apple-ios/dist
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project Reynard.xcodeproj \
+            -scheme Reynard \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM="" \
+            GECKO_DIST="$GECKO_DIST" \
+            EXPANDED_CODE_SIGN_IDENTITY="-" \
+            | xcbeautify || true
+
+      - name: Upload .app bundle if built
+        if: ${{ inputs.run_xcodebuild }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Reynard-unsigned-app
+          path: browser/build/Build/Products/Release-iphoneos/Reynard.app
+          if-no-files-found: warn
+          retention-days: 7

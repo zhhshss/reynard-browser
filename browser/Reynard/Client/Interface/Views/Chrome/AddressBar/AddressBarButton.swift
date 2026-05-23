@@ -40,6 +40,22 @@ final class AddressBarButton: UIButton {
             }
         }
     }
+
+    /// Provides a subtle press-down scale effect so taps feel responsive.
+    /// The scale collapses to identity under Reduce Motion.
+    override var isHighlighted: Bool {
+        didSet {
+            guard oldValue != isHighlighted else { return }
+            let targetTransform: CGAffineTransform = isHighlighted ? CGAffineTransform(scaleX: 0.86, y: 0.86) : .identity
+            Animations.run(
+                duration: isHighlighted ? Animations.Duration.instant : Animations.Duration.quick,
+                delay: 0,
+                options: [.beginFromCurrentState, .allowUserInteraction, isHighlighted ? .curveEaseIn : .curveEaseOut]
+            ) {
+                self.transform = targetTransform
+            }
+        }
+    }
     
     @available(iOS 13.0, *)
     @objc private func handleLegacyPrimaryTap() {

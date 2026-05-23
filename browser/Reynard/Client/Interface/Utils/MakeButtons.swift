@@ -42,7 +42,7 @@ enum MakeButtons {
     }
     
     static func makeToolbarButton(target: AnyObject, imageName: String, action: Selector) -> UIButton {
-        let button = UIButton(type: .system)
+        let button = ToolbarButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(toolbarImage(for: imageName), for: .normal)
         if imageName == "plus" {
@@ -104,7 +104,7 @@ enum MakeButtons {
     }
     
     static func makeTabOverviewBarButton(controller: BrowserViewController, imageName: String, isFilled: Bool, action: Selector) -> UIButton {
-        let button = UIButton(type: .system)
+        let button = ToolbarButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(toolbarImage(for: imageName), for: .normal)
         button.setPreferredSymbolConfiguration(
@@ -131,12 +131,52 @@ enum MakeButtons {
 private final class LibraryActionsButton: UIButton {
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         guard !MakeButtons.hasLiquidGlass else {
             return
         }
-        
+
         layer.cornerRadius = bounds.height / 2
+    }
+}
+
+/// A toolbar button that animates its scale and background when pressed,
+/// giving immediate tactile feedback for taps. Honors Reduce Motion.
+private final class ToolbarButton: UIButton {
+    private var restingBackgroundColor: UIColor?
+    private var hasCapturedRestingBackground = false
+
+    override var isHighlighted: Bool {
+        didSet {
+            guard oldValue != isHighlighted else { return }
+            captureRestingBackgroundIfNeeded()
+            let targetTransform: CGAffineTransform = isHighlighted
+                ? CGAffineTransform(scaleX: 0.88, y: 0.88)
+                : .identity
+            // If the button has its own background color (e.g. tab-overview
+            // mode toggle), keep it. Otherwise darken slightly on press so
+            // plain transparent toolbar buttons get visible feedback too.
+            let target: UIColor?
+            if let resting = restingBackgroundColor, resting.cgColor.alpha > 0.01 {
+                target = isHighlighted ? resting.withAlphaComponent(0.7) : resting
+            } else {
+                target = isHighlighted ? .quaternarySystemFill : restingBackgroundColor
+            }
+            Animations.run(
+                duration: isHighlighted ? Animations.Duration.instant : Animations.Duration.quick,
+                delay: 0,
+                options: [.beginFromCurrentState, .allowUserInteraction, isHighlighted ? .curveEaseIn : .curveEaseOut]
+            ) {
+                self.transform = targetTransform
+                self.backgroundColor = target
+            }
+        }
+    }
+
+    private func captureRestingBackgroundIfNeeded() {
+        guard !hasCapturedRestingBackground else { return }
+        hasCapturedRestingBackground = true
+        restingBackgroundColor = backgroundColor
     }
 }
 

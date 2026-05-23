@@ -15,7 +15,7 @@ protocol AddressBarDelegate: AnyObject {
 }
 
 final class AddressBar: UIView {
-    static let placeholderText = "Search or enter website name"
+    static var placeholderText: String { Strings.AddressBar.placeholder }
     
     private weak var delegate: AddressBarDelegate?
     private var shadowEnabled = true
@@ -153,8 +153,18 @@ final class AddressBar: UIView {
     }
     
     func setShadowEnabled(_ enabled: Bool) {
+        guard shadowEnabled != enabled else { return }
         shadowEnabled = enabled
-        layer.shadowOpacity = enabled ? 0.12 : 0
+        let target: Float = enabled ? 0.12 : 0
+        if Animations.motionEnabled {
+            let animation = CABasicAnimation(keyPath: "shadowOpacity")
+            animation.fromValue = layer.shadowOpacity
+            animation.toValue = target
+            animation.duration = Animations.Duration.standard
+            animation.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            layer.add(animation, forKey: "shadowOpacity")
+        }
+        layer.shadowOpacity = target
         setNeedsLayout()
     }
     

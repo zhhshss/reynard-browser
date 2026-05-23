@@ -1,0 +1,276 @@
+/*
+   Localizable.strings (Simplified Chinese)
+   Reynard
+
+   Created by Minh Ton on 5/23/26.
+*/
+
+// MARK: - Common
+
+"common.ok" = "好";
+"common.cancel" = "取消";
+"common.add" = "添加";
+"common.save" = "保存";
+"common.remove" = "移除";
+"common.delete" = "删除";
+"common.edit" = "编辑";
+"common.share" = "分享";
+"common.allow" = "允许";
+"common.enabled" = "已启用";
+"common.details" = "详细信息";
+"common.settings" = "设置";
+"common.permissions" = "权限";
+"common.unknown" = "未知";
+"common.today" = "今天";
+"common.yesterday" = "昨天";
+
+// MARK: - Tabs
+
+"tabs.homepage" = "主页";
+"tabs.private" = "隐私";
+"tabs.tab_count_format" = "%d 个标签页";
+"tabs.zero_tabs" = "0 个标签页";
+"tabs.single_tab_format" = "%d 个标签页";
+
+// MARK: - Context Menu
+
+"context.open_in_new_tab" = "在新标签页中打开";
+"context.open_in_new_private_tab" = "在新隐私标签页中打开";
+"context.copy_link" = "拷贝链接";
+"context.share_link" = "分享链接";
+"context.share_image" = "分享图片";
+"context.save_to_photos" = "存储到照片";
+"context.copy" = "拷贝";
+
+"addressbar.placeholder" = "搜索或输入网址";
+"addressbar.no_addons" = "暂无扩展";
+"addressbar.manage_addons" = "管理扩展";
+"addressbar.request_mobile" = "请求移动版网站";
+"addressbar.request_desktop" = "请求桌面版网站";
+
+// MARK: - Library
+
+"library.bookmarks" = "书签";
+"library.history" = "历史记录";
+"library.downloads" = "下载项";
+"library.settings" = "设置";
+
+// MARK: - Settings
+
+"settings.title" = "设置";
+
+"settings.section.updates" = "可用更新";
+"settings.section.jit" = "JIT";
+"settings.section.general" = "通用";
+"settings.section.about" = "关于";
+
+// MARK: - Settings / General
+
+"settings.general.addons" = "扩展";
+"settings.general.browsing" = "浏览";
+"settings.general.search" = "搜索";
+"settings.general.appearance" = "外观";
+"settings.general.compatibility" = "兼容性";
+
+// MARK: - Settings / About
+
+"settings.about.reynard_browser" = "Reynard 浏览器";
+"settings.about.engine_version" = "引擎版本";
+"settings.about.view_source_code" = "查看源代码";
+"settings.about.support_the_project" = "支持本项目";
+"settings.about.github_profile" = "GitHub - @minh-ton";
+
+// MARK: - Settings / JIT
+
+"settings.jit.enable_jit" = "启用 JIT";
+"settings.jit.import_pairing_file" = "导入配对文件…";
+"settings.jit.jitless_active" = "当前为无 JIT 模式";
+"settings.jit.enable_jit_detail" = "启用 JIT 可显著提升性能，且 WebAssembly 等功能也依赖 JIT。";
+"settings.jit.jit_warning" = "基于配对的 JIT 启用方式在您当前的系统版本上无法正常工作。您可以在无 JIT 状态下使用浏览器；若您的 iOS/iPadOS 版本支持 TrollStore，建议改用 TrollStore 版本的 IPA。";
+"settings.jit.import_failed" = "导入失败";
+"settings.jit.preparing_jit" = "正在准备 JIT";
+"settings.jit.preparing_jit_message" = "由于这是您首次启用 JIT，Reynard 需要下载并挂载开发者磁盘镜像，否则 JIT 将无法正常工作。";
+"settings.jit.download_failed" = "下载失败";
+"settings.jit.restart_required" = "需要重新启动";
+"settings.jit.restart_required_message" = "应用即将关闭，以使 JIT 设置生效。";
+
+// MARK: - Settings / Updates
+
+"settings.updates.available" = "可用更新";
+"settings.updates.update_now" = "立即更新";
+"settings.updates.version" = "版本";
+"settings.updates.no_release_notes" = "暂无版本说明。";
+"settings.updates.trollstore_footer" = "请确保已启用 TrollStore 的 URL Scheme。";
+"settings.updates.update_unavailable" = "无法更新";
+"settings.updates.update_unavailable_message" = "无法获取下载链接。";
+"settings.updates.download_instructions" = "下载完成后，请在分享菜单中选择您安装 Reynard 时所用的应用，以完成更新安装。";
+"settings.updates.downloading_update" = "正在下载更新";
+"settings.updates.download_failed" = "下载失败";
+
+// MARK: - Settings / Browsing
+
+"settings.browsing.title" = "浏览";
+"settings.browsing.request_desktop_on" = "请求桌面版网站";
+"settings.browsing.all_website" = "所有网站";
+
+// MARK: - Settings / Compatibility
+
+"settings.compatibility.title" = "兼容性";
+"settings.compatibility.use_android_ua" = "使用 Android 用户代理";
+"settings.compatibility.ua_overrides" = "用户代理覆盖";
+"settings.compatibility.ua_overrides_title" = "用户代理覆盖";
+"settings.compatibility.desktop_footer" = "浏览器将使用 Firefox 桌面版用户代理访问网络。";
+"settings.compatibility.android_footer" = "为最大化兼容性，浏览器将使用 Firefox for Android 用户代理访问网络。因此，网站可能会将您的设备识别为 Android 设备。";
+"settings.compatibility.override_hint" = "如果您遇到登录失败、人机验证错误或其他网站异常表现，将该网站的网址添加到用户代理覆盖列表可能有助于解决问题。";
+"settings.compatibility.overrides_footer" = "访问这些网站时将使用浏览器的兼容性用户代理。根据您的「请求桌面版网站」设置，这些网站可能会将您的设备识别为 Android 设备或桌面 Linux 设备。";
+"settings.compatibility.add_website_row" = "添加网站…";
+"settings.compatibility.add_website" = "添加网站";
+"settings.compatibility.add_website_placeholder" = "例如 youtube.com";
+
+// MARK: - Settings / Search
+
+"settings.search.title" = "搜索";
+"settings.search.search_engine" = "搜索引擎";
+"settings.search.search_engine_placeholder" = "https://example.com/search?q=%s";
+"settings.search.search_engine_footer" = "请输入网址，并使用 %s 作为搜索词占位符。当前值必须是有效的 http(s) URL。";
+"settings.search.search_engine_footer_short" = "请输入网址，并使用 %s 作为搜索词占位符";
+"settings.search.invalid_url_title" = "搜索 URL 无效";
+"settings.search.invalid_url_message" = "请输入包含 %s 占位符的有效 http(s) URL，该占位符将被替换为搜索词。";
+
+// MARK: - Settings / Appearance
+
+"settings.appearance.title" = "外观";
+"settings.appearance.position_bottom" = "底部";
+"settings.appearance.position_top" = "顶部";
+"settings.appearance.tabs" = "标签页";
+"settings.appearance.landscape_tab_bar" = "横屏标签栏";
+
+// MARK: - Settings / Add-ons
+
+"settings.addons.title" = "扩展";
+"settings.addons.loading_addons" = "正在加载扩展…";
+"settings.addons.no_addons_installed" = "未安装任何扩展";
+"settings.addons.discover_addons" = "发现扩展…";
+"settings.addons.installing_addon" = "正在安装扩展…";
+"settings.addons.install_from_file" = "从文件安装扩展…";
+"settings.addons.installed_addons" = "已安装的扩展";
+"settings.addons.failed_to_install" = "扩展安装失败";
+"settings.addons.failed_to_remove" = "扩展移除失败";
+"settings.addons.failed_to_update_permissions" = "权限更新失败";
+"settings.addons.failed_to_update_private_access" = "隐私浏览权限更新失败";
+"settings.addons.addon" = "扩展";
+"settings.addons.not_allowed_in_private" = "隐私浏览中不允许";
+"settings.addons.allow_in_private" = "允许在隐私浏览中使用";
+"settings.addons.remove_prompt_prefix" = "是否要移除";
+"settings.addons.blocked_policy" = "此扩展因违反 Mozilla 政策已被屏蔽并禁用。";
+"settings.addons.not_verified" = "无法验证为安全扩展，已被禁用。";
+"settings.addons.not_verified_format" = "%@ 无法验证为安全扩展，已被禁用。";
+"settings.addons.not_compatible" = "与您的版本不兼容：";
+"settings.addons.not_compatible_format" = "%@ 与您的 %@（版本 %@）不兼容。";
+"settings.addons.restricted" = "此扩展受限，使用可能存在风险。";
+"settings.addons.restricted_disabled" = "此扩展受限且已被禁用。您可以选择启用它，但使用可能存在风险。";
+"settings.addons.fallback_app_name" = "本浏览器";
+"settings.addons.remove_prompt_format" = "是否要移除 %@？";
+
+"settings.addons.detail.title" = "详细信息";
+"settings.addons.detail.information" = "信息";
+"settings.addons.detail.links" = "链接";
+"settings.addons.detail.author" = "作者";
+"settings.addons.detail.version" = "版本";
+"settings.addons.detail.last_updated" = "最近更新";
+"settings.addons.detail.rating" = "评分";
+"settings.addons.detail.homepage" = "主页";
+"settings.addons.detail.more_about_extension" = "了解更多关于此扩展";
+"settings.addons.detail.out_of_5_reviews" = "（满分 5 分）• 评价：";
+"settings.addons.detail.out_of_5" = "（满分 5 分）";
+
+"settings.addons.permission.title" = "权限";
+"settings.addons.permission.no_permissions" = "此扩展无需任何权限。";
+"settings.addons.permission.required" = "必需权限";
+"settings.addons.permission.optional" = "可选权限";
+"settings.addons.permission.required_data_collection" = "必需的数据收集";
+"settings.addons.permission.optional_data_collection" = "可选的数据收集";
+"settings.addons.permission.allow_for_all_sites" = "允许在所有网站使用";
+
+"settings.addons.prompt.add" = "添加";
+"settings.addons.prompt.update" = "更新";
+"settings.addons.prompt.add_addon" = "添加扩展";
+"settings.addons.prompt.update_addon_permissions" = "更新扩展权限";
+"settings.addons.prompt.additional_options" = "其他选项";
+"settings.addons.prompt.show_all_sites" = "显示所有网站";
+"settings.addons.prompt.allow_in_private_browsing" = "允许在隐私浏览中使用";
+"settings.addons.prompt.add_name_prompt" = "添加 %@？";
+"settings.addons.prompt.requests_data_collection" = "%@ 请求额外的数据收集权限。";
+"settings.addons.prompt.requests_permissions" = "%@ 请求额外权限。";
+"settings.addons.prompt.updated_requires_approval" = "%@ 已更新。您必须批准额外权限才能安装更新版本。关闭此提示将保持当前的扩展版本。";
+"settings.addons.prompt.access_data_for_sites_in" = "访问您在以下网站的数据：";
+"settings.addons.prompt.sites" = "网站";
+
+// MARK: - Bookmarks
+
+"bookmarks.title" = "书签";
+"bookmarks.search_placeholder" = "搜索书签";
+"bookmarks.no_matching" = "未找到匹配的书签";
+"bookmarks.show_folders_on_top" = "文件夹置顶";
+"bookmarks.edit_bookmarks" = "编辑书签";
+"bookmarks.new_folder" = "新建文件夹";
+"bookmarks.sort_by" = "排序方式";
+"bookmarks.sort_none" = "无";
+"bookmarks.sort_date_added" = "添加日期";
+"bookmarks.sort_name" = "名称";
+"bookmarks.sort_address" = "网址";
+"bookmarks.folders" = "文件夹";
+"bookmarks.bookmarks_section" = "书签";
+"bookmarks.add_to_favorites" = "添加到收藏";
+"bookmarks.add_bookmark" = "添加书签";
+"bookmarks.edit_bookmark" = "编辑书签";
+"bookmarks.new_folder_title" = "新建文件夹";
+"bookmarks.location" = "位置";
+"bookmarks.sites" = "网站";
+
+// MARK: - History
+
+"history.title" = "历史记录";
+"history.search_placeholder" = "搜索历史记录";
+"history.empty" = "您的浏览历史会显示在这里";
+"history.no_matching" = "未找到匹配的历史记录";
+
+// MARK: - Downloads
+
+"downloads.title" = "下载项";
+"downloads.search_placeholder" = "搜索下载项";
+"downloads.open_folder" = "打开下载文件夹";
+"downloads.clear_history" = "清除下载记录";
+"downloads.empty" = "您下载的文件会显示在这里";
+"downloads.no_matching" = "未找到匹配的下载项";
+"downloads.previous_7_days" = "过去 7 天";
+"downloads.previous_30_days" = "过去 30 天";
+"downloads.open_in_files" = "在文件\n中打开";
+"downloads.cancel_download_title" = "取消下载？";
+"downloads.cancel_download_message_prefix" = "是否要停止下载";
+"downloads.keep_downloading" = "继续下载";
+"downloads.cancel_download" = "取消下载";
+"downloads.download_action" = "下载";
+"downloads.confirm_download_format" = "是否要下载「%@」？";
+
+// MARK: - Clear History
+
+"clear_history.title" = "清除历史记录";
+"clear_history.button" = "清除历史记录";
+"clear_history.timeframe" = "清除时段";
+"clear_history.additional_options" = "其他选项";
+"clear_history.last_hour" = "最近一小时";
+"clear_history.today" = "今天";
+"clear_history.today_and_yesterday" = "今天和昨天";
+"clear_history.all_history" = "全部历史";
+"clear_history.close_all_tabs" = "关闭所有标签页";
+"clear_history.tab_singular" = "个标签页";
+"clear_history.tab_plural" = "个标签页";
+"clear_history.close_tabs_format" = "这将关闭您的 %d %@。";
+
+// MARK: - Clear Downloads
+
+"clear_downloads.title" = "清除下载项";
+"clear_downloads.button" = "清除下载项";
+"clear_downloads.timeframe" = "清除时段";
+"clear_downloads.footer" = "清除下载记录不会删除您下载文件夹中的文件。";

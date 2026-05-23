@@ -23,7 +23,7 @@ final class DownloadsManagerView: UIView, UITableViewDataSource, UITableViewDele
         searchBar.autocapitalizationType = .none
         searchBar.autocorrectionType = .no
         searchBar.searchBarStyle = .minimal
-        searchBar.placeholder = "Search Downloads"
+        searchBar.placeholder = Strings.Downloads.searchPlaceholder
         searchBar.delegate = self
         return searchBar
     }()
@@ -262,10 +262,10 @@ final class DownloadsManagerView: UIView, UITableViewDataSource, UITableViewDele
     
     fileprivate func makeDownloadsActionsMenu() -> UIMenu {
         UIMenu(title: "", children: [
-            UIAction(title: "Open Downloads Folder", image: UIImage(systemName: "folder")) { [weak self] _ in
+            UIAction(title: Strings.Downloads.openFolder, image: UIImage(systemName: "folder")) { [weak self] _ in
                 self?.openDownloadsFolder()
             },
-            UIAction(title: "Clear Downloads History", image: UIImage(named: "arrow.down.circle.badge.xmark")) { [weak self] _ in
+            UIAction(title: Strings.Downloads.clearHistory, image: UIImage(named: "arrow.down.circle.badge.xmark")) { [weak self] _ in
                 self?.presentClearDownloadsHistory()
             },
         ])
@@ -380,7 +380,7 @@ final class DownloadsManagerView: UIView, UITableViewDataSource, UITableViewDele
     }
     
     private func updateBackgroundView() {
-        emptyStateView.message = currentSearchTerm.isEmpty ? "Files you download appear here" : "No matching downloads"
+        emptyStateView.message = currentSearchTerm.isEmpty ? Strings.Downloads.empty : Strings.Downloads.noMatching
         tableView.backgroundView = sections.isEmpty ? emptyStateView : nil
     }
     
@@ -448,16 +448,16 @@ final class DownloadsManagerView: UIView, UITableViewDataSource, UITableViewDele
         
         var resolvedSections: [Section] = []
         if !todayItems.isEmpty {
-            resolvedSections.append(Section(title: "Today", items: todayItems))
+            resolvedSections.append(Section(title: Strings.Common.today, items: todayItems))
         }
         if !yesterdayItems.isEmpty {
-            resolvedSections.append(Section(title: "Yesterday", items: yesterdayItems))
+            resolvedSections.append(Section(title: Strings.Common.yesterday, items: yesterdayItems))
         }
         if !previousSevenDayItems.isEmpty {
-            resolvedSections.append(Section(title: "Previous 7 Days", items: previousSevenDayItems))
+            resolvedSections.append(Section(title: Strings.Downloads.previous7Days, items: previousSevenDayItems))
         }
         if !previousThirtyDayItems.isEmpty {
-            resolvedSections.append(Section(title: "Previous 30 Days", items: previousThirtyDayItems))
+            resolvedSections.append(Section(title: Strings.Downloads.previous30Days, items: previousThirtyDayItems))
         }
         
         let currentYear = calendar.component(.year, from: now)
@@ -569,7 +569,7 @@ final class DownloadsManagerView: UIView, UITableViewDataSource, UITableViewDele
         
         switch item.state {
         case .downloading:
-            let cancelAction = UIContextualAction(style: .destructive, title: "Cancel") { [weak self] _, _, completion in
+            let cancelAction = UIContextualAction(style: .destructive, title: Strings.Common.cancel) { [weak self] _, _, completion in
                 self?.presentCancellationConfirmation(for: item, completion: completion)
             }
             let configuration = UISwipeActionsConfiguration(actions: [cancelAction])
@@ -577,7 +577,7 @@ final class DownloadsManagerView: UIView, UITableViewDataSource, UITableViewDele
             return configuration
             
         case .completed:
-            let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { _, _, completion in
+            let deleteAction = UIContextualAction(style: .destructive, title: Strings.Common.delete) { _, _, completion in
                 DownloadStore.shared.deleteDownloadedItem(id: item.id)
                 completion(true)
             }
@@ -588,7 +588,7 @@ final class DownloadsManagerView: UIView, UITableViewDataSource, UITableViewDele
                 return configuration
             }
             
-            let shareAction = UIContextualAction(style: .normal, title: "Share") { [weak self] _, _, completion in
+            let shareAction = UIContextualAction(style: .normal, title: Strings.Common.share) { [weak self] _, _, completion in
                 guard let self else {
                     completion(false)
                     return
@@ -599,7 +599,7 @@ final class DownloadsManagerView: UIView, UITableViewDataSource, UITableViewDele
             }
             shareAction.backgroundColor = .systemGreen
             
-            let openAction = UIContextualAction(style: .normal, title: "Open in\nFiles") { [weak self] _, _, completion in
+            let openAction = UIContextualAction(style: .normal, title: Strings.Downloads.openInFiles) { [weak self] _, _, completion in
                 guard let self else {
                     completion(false)
                     return
@@ -674,14 +674,14 @@ final class DownloadsManagerView: UIView, UITableViewDataSource, UITableViewDele
         }
         
         let alert = UIAlertController(
-            title: "Cancel Download?",
-            message: "Do you want to stop downloading \(item.fileName)?",
+            title: Strings.Downloads.cancelDownloadTitle,
+            message: "\(Strings.Downloads.cancelDownloadMessagePrefix) \(item.fileName)?",
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "Keep Downloading", style: .cancel) { _ in
+        alert.addAction(UIAlertAction(title: Strings.Downloads.keepDownloading, style: .cancel) { _ in
             completion(false)
         })
-        alert.addAction(UIAlertAction(title: "Cancel Download", style: .destructive) { _ in
+        alert.addAction(UIAlertAction(title: Strings.Downloads.cancelDownload, style: .destructive) { _ in
             DownloadStore.shared.cancelDownload(id: item.id)
             completion(true)
         })
@@ -762,7 +762,7 @@ private final class EmptyDownloadsBackgroundView: UIView {
         label.textColor = .secondaryLabel
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.text = "Files you download appear here"
+        label.text = Strings.Downloads.empty
         return label
     }()
     

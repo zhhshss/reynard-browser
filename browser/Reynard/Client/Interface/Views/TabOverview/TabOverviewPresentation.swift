@@ -140,6 +140,7 @@ final class TabOverviewPresentation {
         isTransitionRunning = true
         isVisible = true
         currentOverviewProgress = 1
+        Haptics.medium()
         
         let overviewMode: TabOverviewCollection.Mode = controller.tabManager.selectedTabMode == .private ? .privateTabs : .regularTabs
         controller.browserUI.tabOverviewBarButtons.modeControl.selectedSegmentIndex = overviewMode.rawValue
@@ -211,7 +212,13 @@ final class TabOverviewPresentation {
         controller.browserUI.bottomContainer.containerView.isHidden = true
         controller.browserUI.bottomContainer.bottomSafeAreaFillView.isHidden = true
         
-        UIView.animate(withDuration: 0.60, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1, options: [.curveEaseInOut]) {
+        Animations.spring(
+            duration: Animations.Duration.presentation,
+            delay: 0,
+            damping: Animations.Spring.standard.damping,
+            velocity: Animations.Spring.standard.velocity,
+            options: [.curveEaseInOut]
+        ) {
             transitionView.transform = .identity
             bottomSnapshot.alpha = 0
             self.controller.browserUI.tabOverviewBottomBar.barView.alpha = 1
@@ -220,7 +227,7 @@ final class TabOverviewPresentation {
             bottomSnapshot.removeFromSuperview()
             transitionView.removeFromSuperview()
             selectedCell.setTransitionHidden(false)
-            
+
             self.controller.view.bringSubviewToFront(self.controller.browserUI.tabOverview.containerView)
             self.controller.browserUI.geckoView.isHidden = false
             self.controller.applyChromeLayout(animated: false)
@@ -230,6 +237,7 @@ final class TabOverviewPresentation {
     
     private func animatePhoneOverviewDismissal() {
         isTransitionRunning = true
+        Haptics.light()
         let overviewIndex = overviewAnimationIndex()
         
         controller.browserUI.tabOverview.containerView.isHidden = false
@@ -295,7 +303,13 @@ final class TabOverviewPresentation {
         controller.browserUI.tabOverviewBottomBar.barView.alpha = 0
         bringBrowserChromeToFrontForDismissal()
         
-        UIView.animate(withDuration: 0.45, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 1, options: [.curveEaseInOut]) {
+        Animations.spring(
+            duration: Animations.Duration.slow,
+            delay: 0,
+            damping: Animations.Spring.snappy.damping,
+            velocity: Animations.Spring.snappy.velocity,
+            options: [.curveEaseInOut]
+        ) {
             pageSnapshot.frame = self.controller.dismissalContentFrame()
             pageSnapshot.layer.cornerRadius = 0
             bottomSnapshot.alpha = 0
@@ -327,6 +341,7 @@ final class TabOverviewPresentation {
         isTransitionRunning = true
         isVisible = true
         currentOverviewProgress = 1
+        Haptics.medium()
         
         let overviewMode: TabOverviewCollection.Mode = controller.tabManager.selectedTabMode == .private ? .privateTabs : .regularTabs
         controller.browserUI.tabOverviewBarButtons.modeControl.selectedSegmentIndex = overviewMode.rawValue
@@ -395,7 +410,13 @@ final class TabOverviewPresentation {
         controller.browserUI.bottomContainer.containerView.isHidden = true
         controller.browserUI.bottomContainer.bottomSafeAreaFillView.isHidden = true
         
-        UIView.animate(withDuration: 0.60, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1, options: [.curveEaseInOut]) {
+        Animations.spring(
+            duration: Animations.Duration.presentation,
+            delay: 0,
+            damping: Animations.Spring.standard.damping,
+            velocity: Animations.Spring.standard.velocity,
+            options: [.curveEaseInOut]
+        ) {
             transitionView.transform = .identity
             if isPhoneTopPresentation {
                 self.controller.browserUI.tabOverviewBottomBar.barView.alpha = 1
@@ -418,6 +439,7 @@ final class TabOverviewPresentation {
     
     private func animatePadOverviewDismissal() {
         isTransitionRunning = true
+        Haptics.light()
         let overviewIndex = overviewAnimationIndex()
         
         let isPhoneTopDismissal = controller.usesBottomPhoneOverview
@@ -488,7 +510,13 @@ final class TabOverviewPresentation {
         controller.browserUI.tabBar.collectionView.alpha = 0
         bringBrowserChromeToFrontForDismissal()
         
-        UIView.animate(withDuration: 0.45, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 1, options: [.curveEaseInOut]) {
+        Animations.spring(
+            duration: Animations.Duration.slow,
+            delay: 0,
+            damping: Animations.Spring.snappy.damping,
+            velocity: Animations.Spring.snappy.velocity,
+            options: [.curveEaseInOut]
+        ) {
             pageSnapshot.frame = self.controller.dismissalContentFrame()
             pageSnapshot.layer.cornerRadius = 0
             self.controller.browserUI.tabOverview.containerView.alpha = 0

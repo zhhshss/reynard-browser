@@ -29,13 +29,13 @@ enum AddressBarMenu {
         let url = selectedURL.flatMap(URL.init(string:))
         if let url,
            url.host != nil {
-            let title = BookmarkStore.shared.bookmark(for: url) == nil ? "Add Bookmark" : "Edit Bookmark"
+            let title = BookmarkStore.shared.bookmark(for: url) == nil ? Strings.Bookmarks.addBookmark : Strings.Bookmarks.editBookmark
             tabActions.append(UIAction(title: title, image: UIImage(systemName: "book")) { _ in
                 NotificationCenter.default.post(name: addBookmarkNotification, object: nil)
             })
-            
+
             if !BookmarkStore.shared.containsBookmarkInFavoritesHierarchy(for: url) {
-                tabActions.append(UIAction(title: "Add to Favorites", image: UIImage(systemName: "star")) { _ in
+                tabActions.append(UIAction(title: Strings.Bookmarks.addToFavorites, image: UIImage(systemName: "star")) { _ in
                     NotificationCenter.default.post(
                         name: addBookmarkNotification,
                         object: nil,
@@ -44,12 +44,12 @@ enum AddressBarMenu {
                 })
             }
         }
-        
+
         let addonsChildren: [UIMenuElement]
         if addonItems.isEmpty {
             addonsChildren = [
                 UIAction(
-                    title: "No Add-ons",
+                    title: Strings.AddressBar.noAddons,
                     image: UIImage(systemName: "puzzlepiece.extension"),
                     attributes: .disabled
                 ) { _ in }
@@ -68,17 +68,17 @@ enum AddressBarMenu {
         
         var pageActions: [UIMenuElement] = [
             UIMenu(
-                title: "Manage Add-ons",
+                title: Strings.AddressBar.manageAddons,
                 image: UIImage(systemName: "puzzlepiece.extension"),
                 identifier: manageAddonsIdentifier,
                 children: addonsChildren
             )
         ]
-        
+
         if let selectedTab,
            let selectedURL,
            let isDesktop = UserAgentController.shared.isDesktopMode(for: selectedURL, tabID: selectedTab.id) {
-            let title = isDesktop ? "Request Mobile Website" : "Request Desktop Website"
+            let title = isDesktop ? Strings.AddressBar.requestMobile : Strings.AddressBar.requestDesktop
             let imageName = isDesktop ? "iphone" : "desktopcomputer"
             pageActions.append(UIAction(title: title, image: UIImage(systemName: imageName)) { _ in
                 NotificationCenter.default.post(name: changeWebsiteModeNotification, object: nil)

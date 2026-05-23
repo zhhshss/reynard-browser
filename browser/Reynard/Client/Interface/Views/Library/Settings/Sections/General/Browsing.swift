@@ -12,7 +12,7 @@ final class BrowsingPreferencesViewController: SettingsTableViewController {
     
     init() {
         super.init(style: .insetGrouped)
-        title = "Browsing"
+        title = Strings.Settings.Browsing.title
     }
     
     required init?(coder: NSCoder) {
@@ -35,15 +35,15 @@ final class BrowsingPreferencesViewController: SettingsTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        "Request Desktop Website On"
+        Strings.Settings.Browsing.requestDesktopOn
     }
-    
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
         cell.selectionStyle = .none
-        cell.textLabel?.text = "All Website"
+        cell.textLabel?.text = Strings.Settings.Browsing.allWebsite
         cell.accessoryView = requestDesktopWebsiteSwitch
-        
+
         return cell
     }
     

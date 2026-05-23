@@ -16,13 +16,13 @@ enum LibrarySection: Int, CaseIterable {
     var title: String {
         switch self {
         case .bookmarks:
-            return "Bookmarks"
+            return Strings.Library.bookmarks
         case .history:
-            return "History"
+            return Strings.Library.history
         case .downloads:
-            return "Downloads"
+            return Strings.Library.downloads
         case .settings:
-            return "Settings"
+            return Strings.Library.settings
         }
     }
     

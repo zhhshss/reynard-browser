@@ -41,7 +41,7 @@ final class AddonPromptViewController: UITableViewController {
         button.layer.cornerRadius = 25
         button.layer.cornerCurve = .continuous
         button.titleLabel?.font = .preferredFont(forTextStyle: .headline)
-        button.setTitle(prompt.kind == .install ? "Add" : "Allow", for: .normal)
+        button.setTitle(prompt.kind == .install ? Strings.Settings.Addons.Prompt.add : Strings.Common.allow, for: .normal)
         button.addTarget(self, action: #selector(confirmPrompt), for: .touchUpInside)
         return button
     }()
@@ -138,9 +138,9 @@ final class AddonPromptViewController: UITableViewController {
             guard !displayItems.isEmpty else {
                 return nil
             }
-            return "Required Permissions"
+            return Strings.Settings.Addons.Permission.required
         case .options:
-            return prompt.kind == .install ? "Additional Options" : nil
+            return prompt.kind == .install ? Strings.Settings.Addons.Prompt.additionalOptions : nil
         case .message, nil:
             return nil
         }
@@ -170,7 +170,7 @@ final class AddonPromptViewController: UITableViewController {
                 cell.textLabel?.text = value
             case .showAllSites:
                 cell.textLabel?.font = .preferredFont(forTextStyle: .body)
-                cell.textLabel?.text = "Show All Sites"
+                cell.textLabel?.text = Strings.Settings.Addons.Prompt.showAllSites
                 cell.textLabel?.textColor = view.tintColor
                 cell.selectionStyle = .default
                 cell.accessoryType = .disclosureIndicator
@@ -183,7 +183,7 @@ final class AddonPromptViewController: UITableViewController {
             }
         case .options:
             cell.textLabel?.font = .preferredFont(forTextStyle: .body)
-            cell.textLabel?.text = "Allow in Private Browsing"
+            cell.textLabel?.text = Strings.Settings.Addons.Prompt.allowInPrivateBrowsing
             cell.accessoryView = privateBrowsingSwitch
         case nil:
             cell.textLabel?.text = nil
@@ -247,7 +247,7 @@ final class AddonPromptViewController: UITableViewController {
         var items: [DisplayItem] = []
         
         if !domainRows.isEmpty {
-            items.append(.domainHeader("Access your data for sites in \(domainRows.count) domains"))
+            items.append(.domainHeader("\(Strings.Settings.Addons.Prompt.accessDataForSitesIn) \(domainRows.count)"))
             
             domainRows.prefix(Self.contractedDomainCount).forEach { items.append(.domain($0)) }
             
@@ -300,9 +300,9 @@ final class AddonPromptViewController: UITableViewController {
     private static func promptTitle(for prompt: AddonPermissionPrompt) -> String {
         switch prompt.kind {
         case .install:
-            return "Add Add-on"
+            return Strings.Settings.Addons.Prompt.addAddon
         case .optional, .update:
-            return "Update Add-on Permissions"
+            return Strings.Settings.Addons.Prompt.updateAddonPermissions
         }
     }
     
@@ -314,7 +314,7 @@ private final class AddonPromptSitesViewController: UITableViewController {
     init(sites: [String]) {
         self.sites = sites
         super.init(style: .insetGrouped)
-        title = "Sites"
+        title = Strings.Settings.Addons.Prompt.sites
     }
     
     required init?(coder: NSCoder) {

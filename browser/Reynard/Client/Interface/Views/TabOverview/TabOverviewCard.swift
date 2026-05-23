@@ -232,7 +232,7 @@ final class TabOverviewCard: UICollectionViewCell {
     }
     
     func configure(tab: Tab) {
-        titleLabel.text = tab.title.isEmpty ? "Homepage" : tab.title
+        titleLabel.text = tab.title.isEmpty ? Strings.Tabs.homepage : tab.title
         previewImageView.image = tab.thumbnail
         faviconImageView.image = tab.favicon ?? Self.fallbackFavicon
     }
@@ -308,7 +308,7 @@ final class TabOverviewCard: UICollectionViewCell {
         }
         
         if animated {
-            UIView.animate(withDuration: 0.18, delay: 0, options: [.curveEaseOut, .beginFromCurrentState], animations: animations)
+            Animations.run(duration: Animations.Duration.quick, delay: 0, options: [.curveEaseOut, .beginFromCurrentState], animations: animations)
         } else {
             animations()
         }

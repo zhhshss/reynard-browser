@@ -186,7 +186,7 @@ final class BrowserSplitViewController: UISplitViewController, UISplitViewContro
         destinationButton.alpha = 0
         destinationButton.isHidden = false
         
-        UIView.animate(withDuration: 0.14, delay: 0, options: [.curveEaseOut]) {
+        Animations.run(duration: Animations.Duration.instant, delay: 0, options: [.curveEaseOut]) {
             snapshot.frame = destinationFrame
             destinationButton.alpha = 1
         } completion: { _ in

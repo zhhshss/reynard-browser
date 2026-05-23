@@ -141,7 +141,7 @@ final class EditBookmarkViewController: UIViewController, UITableViewDataSource,
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = showsFavoritesHierarchyOnly ? "Add to Favorites" : (bookmark == nil ? "Add Bookmark" : "Edit Bookmark")
+        title = showsFavoritesHierarchyOnly ? Strings.Bookmarks.addToFavorites : (bookmark == nil ? Strings.Bookmarks.addBookmark : Strings.Bookmarks.editBookmark)
         view.backgroundColor = .systemGroupedBackground
         navigationItem.largeTitleDisplayMode = .never
         
@@ -156,7 +156,7 @@ final class EditBookmarkViewController: UIViewController, UITableViewDataSource,
                 navigationItem.leftBarButtonItems?.first?.tintColor = .label
             }
         } else {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(saveBookmark))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: Strings.Common.save, style: .done, target: self, action: #selector(saveBookmark))
         }
         
         view.addSubview(tableView)
@@ -219,7 +219,7 @@ final class EditBookmarkViewController: UIViewController, UITableViewDataSource,
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        section == 2 ? "Location" : nil
+        section == 2 ? Strings.Bookmarks.location : nil
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -268,7 +268,7 @@ final class EditBookmarkViewController: UIViewController, UITableViewDataSource,
             let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
             cell.backgroundColor = .secondarySystemGroupedBackground
             cell.tintColor = .systemBlue
-            cell.textLabel?.text = "New Folder"
+            cell.textLabel?.text = Strings.Bookmarks.newFolder
             cell.textLabel?.textColor = .systemBlue
             cell.imageView?.image = UIImage(systemName: "folder.badge.plus")?.withRenderingMode(.alwaysTemplate)
             return cell
@@ -400,7 +400,7 @@ final class NewBookmarkFolderViewController: UIViewController, UITableViewDataSo
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "New Folder"
+        title = Strings.Bookmarks.newFolderTitle
         view.backgroundColor = .systemGroupedBackground
         navigationItem.largeTitleDisplayMode = .never
         
@@ -410,7 +410,7 @@ final class NewBookmarkFolderViewController: UIViewController, UITableViewDataSo
             navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(createFolder))
             navigationItem.rightBarButtonItem?.tintColor = .label
         } else {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(createFolder))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: Strings.Common.save, style: .done, target: self, action: #selector(createFolder))
         }
         
         view.addSubview(tableView)
@@ -439,7 +439,7 @@ final class NewBookmarkFolderViewController: UIViewController, UITableViewDataSo
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        section == 1 ? "Location" : nil
+        section == 1 ? Strings.Bookmarks.location : nil
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

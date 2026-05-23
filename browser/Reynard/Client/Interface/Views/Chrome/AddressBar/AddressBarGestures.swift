@@ -75,7 +75,7 @@ final class AddressBarGestures: NSObject {
         searchPanMode = .blocked
         resetHorizontalTransition()
         
-        UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut]) {
+        Animations.run(duration: Animations.Duration.quick, delay: 0, options: [.curveEaseOut]) {
             let transform = CGAffineTransform(translationX: -width * 0.34, y: 0)
             self.controller.browserUI.geckoView.transform = transform
             self.controller.activeAddressBar.transform = transform
@@ -117,7 +117,7 @@ final class AddressBarGestures: NSObject {
             horizontalTargetBarView = targetBar
         }
         
-        UIView.animate(withDuration: 0.24, delay: 0, options: [.curveEaseOut]) {
+        Animations.run(duration: Animations.Duration.standard, delay: 0, options: [.curveEaseOut]) {
             let transform = CGAffineTransform(translationX: -width, y: 0)
             self.controller.browserUI.geckoView.transform = transform
             self.controller.activeAddressBar.transform = transform
@@ -306,7 +306,7 @@ final class AddressBarGestures: NSObject {
         
         if shouldSwitch, let targetIndex = horizontalTargetIndex {
             let finalTranslation = CGFloat(-horizontalDirection) * width
-            UIView.animate(withDuration: 0.24, delay: 0, options: [.curveEaseOut]) {
+            Animations.run(duration: Animations.Duration.standard, delay: 0, options: [.curveEaseOut]) {
                 let transform = CGAffineTransform(translationX: finalTranslation, y: 0)
                 self.controller.browserUI.geckoView.transform = transform
                 self.controller.activeAddressBar.transform = transform
@@ -322,7 +322,7 @@ final class AddressBarGestures: NSObject {
                 _ = self.controller.createTab(selecting: true)
             }
         } else {
-            UIView.animate(withDuration: 0.22, delay: 0, options: [.curveEaseOut]) {
+            Animations.run(duration: 0.22, delay: 0, options: [.curveEaseOut]) {
                 self.controller.browserUI.geckoView.transform = .identity
                 self.controller.activeAddressBar.transform = .identity
                 self.horizontalTargetContentView?.transform = .identity

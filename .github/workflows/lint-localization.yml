@@ -1,0 +1,35 @@
+name: Lint Localization
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'browser/Reynard/Resources/*.lproj/**'
+      - 'browser/Reynard/Client/**/*.swift'
+      - '.github/scripts/check_localization.py'
+      - '.github/workflows/lint-localization.yml'
+  pull_request:
+    paths:
+      - 'browser/Reynard/Resources/*.lproj/**'
+      - 'browser/Reynard/Client/**/*.swift'
+      - '.github/scripts/check_localization.py'
+      - '.github/workflows/lint-localization.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate Localizable.strings
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run localization check
+        run: python3 .github/scripts/check_localization.py

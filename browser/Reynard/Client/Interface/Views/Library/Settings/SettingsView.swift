@@ -63,7 +63,7 @@ final class SettingsRootViewController: SettingsTableViewController {
     
     init() {
         super.init(style: .insetGrouped)
-        title = "Settings"
+        title = Strings.Settings.title
     }
     
     required init?(coder: NSCoder) {
@@ -117,13 +117,13 @@ final class SettingsRootViewController: SettingsTableViewController {
             return makeUpdateNowCell()
         case .jit where indexPath.row == 0:
             let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-            cell.textLabel?.text = "Enable JIT"
+            cell.textLabel?.text = Strings.Settings.JIT.enableJIT
             cell.selectionStyle = .none
             cell.accessoryView = jitSwitch
             return cell
         case .jit:
             let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-            cell.textLabel?.text = "Import Pairing File..."
+            cell.textLabel?.text = Strings.Settings.JIT.importPairingFile
             cell.textLabel?.textColor = view.tintColor
             // if on 16.6 to 17.3.1, disable the cell.
             if #available(iOS 16.6, *) {
@@ -141,26 +141,26 @@ final class SettingsRootViewController: SettingsTableViewController {
             switch indexPath.row {
             case 0:
                 let info = Bundle.main.infoDictionary
-                let version = info?["CFBundleShortVersionString"] as? String ?? "Unknown"
-                let build = info?["CFBundleVersion"] as? String ?? "Unknown"
-                cell.textLabel?.text = "Reynard Browser"
+                let version = info?["CFBundleShortVersionString"] as? String ?? Strings.Common.unknown
+                let build = info?["CFBundleVersion"] as? String ?? Strings.Common.unknown
+                cell.textLabel?.text = Strings.Settings.About.reynardBrowser
                 cell.detailTextLabel?.text = "\(version) (\(build))"
                 cell.detailTextLabel?.textColor = .secondaryLabel
                 cell.selectionStyle = .none
                 cell.accessoryType = .none
                 return cell
             case 1:
-                cell.textLabel?.text = "Engine Version"
+                cell.textLabel?.text = Strings.Settings.About.engineVersion
                 let info = Bundle.main.infoDictionary
-                let geckoTag = info?["GeckoVersion"] as? String ?? "Unknown"
+                let geckoTag = info?["GeckoVersion"] as? String ?? Strings.Common.unknown
                 cell.detailTextLabel?.text = geckoTag
                 cell.detailTextLabel?.textColor = .secondaryLabel
                 cell.selectionStyle = .none
                 cell.accessoryType = .none
                 return cell
-            case 2: cell.textLabel?.text = "View Source Code"
-            case 3: cell.textLabel?.text = "Support The Project"
-            case 4: cell.textLabel?.text = "GitHub - @minh-ton"
+            case 2: cell.textLabel?.text = Strings.Settings.About.viewSourceCode
+            case 3: cell.textLabel?.text = Strings.Settings.About.supportTheProject
+            case 4: cell.textLabel?.text = Strings.Settings.About.githubProfile
             default: cell.textLabel?.text = nil
             }
             cell.textLabel?.textColor = .systemBlue
@@ -197,10 +197,10 @@ final class SettingsRootViewController: SettingsTableViewController {
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         guard visibleSections.indices.contains(section) else { return nil }
         switch visibleSections[section] {
-        case .updates: return "Update Available"
-        case .jit: return "JIT"
-        case .general: return "General"
-        case .about: return "About"
+        case .updates: return Strings.Settings.Section.updates
+        case .jit: return Strings.Settings.Section.jit
+        case .general: return Strings.Settings.Section.general
+        case .about: return Strings.Settings.Section.about
         }
     }
     
@@ -228,27 +228,27 @@ private extension SettingsRootViewController {
         switch row {
         case .addons:
             let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-            cell.textLabel?.text = "Add-ons"
+            cell.textLabel?.text = Strings.Settings.General.addons
             cell.accessoryType = .disclosureIndicator
             return cell
         case .browsing:
             let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-            cell.textLabel?.text = "Browsing"
+            cell.textLabel?.text = Strings.Settings.General.browsing
             cell.accessoryType = .disclosureIndicator
             return cell
         case .search:
             let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-            cell.textLabel?.text = "Search"
+            cell.textLabel?.text = Strings.Settings.General.search
             cell.accessoryType = .disclosureIndicator
             return cell
         case .appearance:
             let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-            cell.textLabel?.text = "Appearance"
+            cell.textLabel?.text = Strings.Settings.General.appearance
             cell.accessoryType = .disclosureIndicator
             return cell
         case .compatibility:
             let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-            cell.textLabel?.text = "Compatibility"
+            cell.textLabel?.text = Strings.Settings.General.compatibility
             cell.accessoryType = .disclosureIndicator
             return cell
         }
@@ -315,7 +315,7 @@ final class SettingsView: UIView {
 extension UIViewController {
     func presentAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: Strings.Common.ok, style: .default))
         present(alert, animated: true)
     }
 }

@@ -1,0 +1,276 @@
+/*
+   Localizable.strings (English)
+   Reynard
+
+   Base language file. Created by Minh Ton on 5/23/26.
+*/
+
+// MARK: - Common
+
+"common.ok" = "OK";
+"common.cancel" = "Cancel";
+"common.add" = "Add";
+"common.save" = "Save";
+"common.remove" = "Remove";
+"common.delete" = "Delete";
+"common.edit" = "Edit";
+"common.share" = "Share";
+"common.allow" = "Allow";
+"common.enabled" = "Enabled";
+"common.details" = "Details";
+"common.settings" = "Settings";
+"common.permissions" = "Permissions";
+"common.unknown" = "Unknown";
+"common.today" = "Today";
+"common.yesterday" = "Yesterday";
+
+// MARK: - Tabs
+
+"tabs.homepage" = "Homepage";
+"tabs.private" = "Private";
+"tabs.tab_count_format" = "%d Tabs";
+"tabs.zero_tabs" = "0 Tabs";
+"tabs.single_tab_format" = "%d Tab";
+
+// MARK: - Context Menu
+
+"context.open_in_new_tab" = "Open in New Tab";
+"context.open_in_new_private_tab" = "Open in New Private Tab";
+"context.copy_link" = "Copy Link";
+"context.share_link" = "Share Link";
+"context.share_image" = "Share Image";
+"context.save_to_photos" = "Save to Photos";
+"context.copy" = "Copy";
+
+"addressbar.placeholder" = "Search or enter website name";
+"addressbar.no_addons" = "No Add-ons";
+"addressbar.manage_addons" = "Manage Add-ons";
+"addressbar.request_mobile" = "Request Mobile Website";
+"addressbar.request_desktop" = "Request Desktop Website";
+
+// MARK: - Library
+
+"library.bookmarks" = "Bookmarks";
+"library.history" = "History";
+"library.downloads" = "Downloads";
+"library.settings" = "Settings";
+
+// MARK: - Settings
+
+"settings.title" = "Settings";
+
+"settings.section.updates" = "Update Available";
+"settings.section.jit" = "JIT";
+"settings.section.general" = "General";
+"settings.section.about" = "About";
+
+// MARK: - Settings / General
+
+"settings.general.addons" = "Add-ons";
+"settings.general.browsing" = "Browsing";
+"settings.general.search" = "Search";
+"settings.general.appearance" = "Appearance";
+"settings.general.compatibility" = "Compatibility";
+
+// MARK: - Settings / About
+
+"settings.about.reynard_browser" = "Reynard Browser";
+"settings.about.engine_version" = "Engine Version";
+"settings.about.view_source_code" = "View Source Code";
+"settings.about.support_the_project" = "Support The Project";
+"settings.about.github_profile" = "GitHub - @minh-ton";
+
+// MARK: - Settings / JIT
+
+"settings.jit.enable_jit" = "Enable JIT";
+"settings.jit.import_pairing_file" = "Import Pairing File...";
+"settings.jit.jitless_active" = "JIT-Less Mode is Currently Active";
+"settings.jit.enable_jit_detail" = "Enabling JIT improves performance significantly and is required for features like WebAssembly.";
+"settings.jit.jit_warning" = "This pairing-based JIT enablement method is not working properly on the OS version you are using. You can use the browser without JIT; or if you're on an iOS/iPadOS version that supports TrollStore, consider using the TrollStore IPA instead.";
+"settings.jit.import_failed" = "Import Failed";
+"settings.jit.preparing_jit" = "Preparing JIT";
+"settings.jit.preparing_jit_message" = "Since this is your first time enabling JIT, Reynard needs to download and mount the Developer Disk Image. This is required for JIT to work properly.";
+"settings.jit.download_failed" = "Download Failed";
+"settings.jit.restart_required" = "Restart Required";
+"settings.jit.restart_required_message" = "The app will now close for the JIT setting to take effect.";
+
+// MARK: - Settings / Updates
+
+"settings.updates.available" = "Update Available";
+"settings.updates.update_now" = "Update Now";
+"settings.updates.version" = "Version";
+"settings.updates.no_release_notes" = "No release notes available.";
+"settings.updates.trollstore_footer" = "Make sure TrollStore's URL Scheme is enabled.";
+"settings.updates.update_unavailable" = "Update Unavailable";
+"settings.updates.update_unavailable_message" = "Could not retrieve the download URL.";
+"settings.updates.download_instructions" = "When the download finishes, choose the app that you used to sideload Reynard in the share sheet to install the update.";
+"settings.updates.downloading_update" = "Downloading Update";
+"settings.updates.download_failed" = "Download Failed";
+
+// MARK: - Settings / Browsing
+
+"settings.browsing.title" = "Browsing";
+"settings.browsing.request_desktop_on" = "Request Desktop Website On";
+"settings.browsing.all_website" = "All Website";
+
+// MARK: - Settings / Compatibility
+
+"settings.compatibility.title" = "Compatibility";
+"settings.compatibility.use_android_ua" = "Use Android User Agent";
+"settings.compatibility.ua_overrides" = "User Agent Overrides";
+"settings.compatibility.ua_overrides_title" = "User Agent Overrides";
+"settings.compatibility.desktop_footer" = "The browser will use a desktop Firefox user agent for navigating the web.";
+"settings.compatibility.android_footer" = "To maximize compatibility, the browser will use the Firefox for Android user agent for navigating the web. As a result, websites may identify your device as an Android device.";
+"settings.compatibility.override_hint" = "If you encounter issues such as sign-in failures, human verification challenges, or other incorrect site behavior, adding the site's URL to this user agent override list may help resolve the problem.";
+"settings.compatibility.overrides_footer" = "Navigations to these websites will use the browser's compatibility user agent. Depending on your Request Desktop Website setting, these websites may identify your device as either an Android device or a desktop Linux device.";
+"settings.compatibility.add_website_row" = "Add Website...";
+"settings.compatibility.add_website" = "Add Website";
+"settings.compatibility.add_website_placeholder" = "e.g. youtube.com";
+
+// MARK: - Settings / Search
+
+"settings.search.title" = "Search";
+"settings.search.search_engine" = "Search Engine";
+"settings.search.search_engine_placeholder" = "https://example.com/search?q=%s";
+"settings.search.search_engine_footer" = "Enter URL with %s in place of query. The current value must be a valid http(s) URL.";
+"settings.search.search_engine_footer_short" = "Enter URL with %s in place of query";
+"settings.search.invalid_url_title" = "Invalid Search URL";
+"settings.search.invalid_url_message" = "Enter a valid http(s) URL containing %s where the search query should go.";
+
+// MARK: - Settings / Appearance
+
+"settings.appearance.title" = "Appearance";
+"settings.appearance.position_bottom" = "Bottom";
+"settings.appearance.position_top" = "Top";
+"settings.appearance.tabs" = "Tabs";
+"settings.appearance.landscape_tab_bar" = "Landscape Tab Bar";
+
+// MARK: - Settings / Add-ons
+
+"settings.addons.title" = "Add-ons";
+"settings.addons.loading_addons" = "Loading Add-ons...";
+"settings.addons.no_addons_installed" = "No Add-ons Installed";
+"settings.addons.discover_addons" = "Discover Add-ons...";
+"settings.addons.installing_addon" = "Installing Add-on...";
+"settings.addons.install_from_file" = "Install Add-on From File...";
+"settings.addons.installed_addons" = "Installed Add-ons";
+"settings.addons.failed_to_install" = "Failed to install add-on";
+"settings.addons.failed_to_remove" = "Failed to remove add-on";
+"settings.addons.failed_to_update_permissions" = "Failed to update permissions";
+"settings.addons.failed_to_update_private_access" = "Failed to update private browsing access";
+"settings.addons.addon" = "Add-on";
+"settings.addons.not_allowed_in_private" = "Not Allowed in Private Browsing";
+"settings.addons.allow_in_private" = "Allow in Private Browsing";
+"settings.addons.remove_prompt_prefix" = "Do you want to remove";
+"settings.addons.blocked_policy" = "This extension is blocked for violating Mozilla's policies and has been disabled.";
+"settings.addons.not_verified" = "could not be verified as secure and has been disabled.";
+"settings.addons.not_verified_format" = "%@ could not be verified as secure and has been disabled.";
+"settings.addons.not_compatible" = "is not compatible with your version of";
+"settings.addons.not_compatible_format" = "%@ is not compatible with your version of %@ (version %@).";
+"settings.addons.restricted" = "This extension is restricted. Using it may be risky.";
+"settings.addons.restricted_disabled" = "This extension is restricted and has been disabled. You can enable it, but this may be risky.";
+"settings.addons.fallback_app_name" = "the browser";
+"settings.addons.remove_prompt_format" = "Do you want to remove %@?";
+
+"settings.addons.detail.title" = "Details";
+"settings.addons.detail.information" = "Information";
+"settings.addons.detail.links" = "Links";
+"settings.addons.detail.author" = "Author";
+"settings.addons.detail.version" = "Version";
+"settings.addons.detail.last_updated" = "Last updated";
+"settings.addons.detail.rating" = "Rating";
+"settings.addons.detail.homepage" = "Homepage";
+"settings.addons.detail.more_about_extension" = "More about this extension";
+"settings.addons.detail.out_of_5_reviews" = "out of 5 • Reviews:";
+"settings.addons.detail.out_of_5" = "out of 5";
+
+"settings.addons.permission.title" = "Permissions";
+"settings.addons.permission.no_permissions" = "This extension does not require any permissions.";
+"settings.addons.permission.required" = "Required Permissions";
+"settings.addons.permission.optional" = "Optional Permissions";
+"settings.addons.permission.required_data_collection" = "Required Data Collection";
+"settings.addons.permission.optional_data_collection" = "Optional Data Collection";
+"settings.addons.permission.allow_for_all_sites" = "Allow for all sites";
+
+"settings.addons.prompt.add" = "Add";
+"settings.addons.prompt.update" = "Update";
+"settings.addons.prompt.add_addon" = "Add Add-on";
+"settings.addons.prompt.update_addon_permissions" = "Update Add-on Permissions";
+"settings.addons.prompt.additional_options" = "Additional Options";
+"settings.addons.prompt.show_all_sites" = "Show All Sites";
+"settings.addons.prompt.allow_in_private_browsing" = "Allow in Private Browsing";
+"settings.addons.prompt.add_name_prompt" = "Add %@?";
+"settings.addons.prompt.requests_data_collection" = "%@ requests additional data collection.";
+"settings.addons.prompt.requests_permissions" = "%@ requests additional permissions.";
+"settings.addons.prompt.updated_requires_approval" = "%@ has been updated. You must approve additional permissions before the updated version will install. Dismissing this prompt will maintain your current add-on version.";
+"settings.addons.prompt.access_data_for_sites_in" = "Access your data for sites in";
+"settings.addons.prompt.sites" = "Sites";
+
+// MARK: - Bookmarks
+
+"bookmarks.title" = "Bookmarks";
+"bookmarks.search_placeholder" = "Search Bookmarks";
+"bookmarks.no_matching" = "No matching bookmarks";
+"bookmarks.show_folders_on_top" = "Show Folders on Top";
+"bookmarks.edit_bookmarks" = "Edit Bookmarks";
+"bookmarks.new_folder" = "New Folder";
+"bookmarks.sort_by" = "Sort By";
+"bookmarks.sort_none" = "None";
+"bookmarks.sort_date_added" = "Date Added";
+"bookmarks.sort_name" = "Name";
+"bookmarks.sort_address" = "Address";
+"bookmarks.folders" = "Folders";
+"bookmarks.bookmarks_section" = "Bookmarks";
+"bookmarks.add_to_favorites" = "Add to Favorites";
+"bookmarks.add_bookmark" = "Add Bookmark";
+"bookmarks.edit_bookmark" = "Edit Bookmark";
+"bookmarks.new_folder_title" = "New Folder";
+"bookmarks.location" = "Location";
+"bookmarks.sites" = "Sites";
+
+// MARK: - History
+
+"history.title" = "History";
+"history.search_placeholder" = "Search History";
+"history.empty" = "Your browsing history appears here";
+"history.no_matching" = "No matching history";
+
+// MARK: - Downloads
+
+"downloads.title" = "Downloads";
+"downloads.search_placeholder" = "Search Downloads";
+"downloads.open_folder" = "Open Downloads Folder";
+"downloads.clear_history" = "Clear Downloads History";
+"downloads.empty" = "Files you download appear here";
+"downloads.no_matching" = "No matching downloads";
+"downloads.previous_7_days" = "Previous 7 Days";
+"downloads.previous_30_days" = "Previous 30 Days";
+"downloads.open_in_files" = "Open in\nFiles";
+"downloads.cancel_download_title" = "Cancel Download?";
+"downloads.cancel_download_message_prefix" = "Do you want to stop downloading";
+"downloads.keep_downloading" = "Keep Downloading";
+"downloads.cancel_download" = "Cancel Download";
+"downloads.download_action" = "Download";
+"downloads.confirm_download_format" = "Do you want to download \"%@\"?";
+
+// MARK: - Clear History
+
+"clear_history.title" = "Clear History";
+"clear_history.button" = "Clear History";
+"clear_history.timeframe" = "Clear Timeframe";
+"clear_history.additional_options" = "Additional Options";
+"clear_history.last_hour" = "Last hour";
+"clear_history.today" = "Today";
+"clear_history.today_and_yesterday" = "Today and yesterday";
+"clear_history.all_history" = "All history";
+"clear_history.close_all_tabs" = "Close All Tabs";
+"clear_history.tab_singular" = "tab";
+"clear_history.tab_plural" = "tabs";
+"clear_history.close_tabs_format" = "This will close your %d %@.";
+
+// MARK: - Clear Downloads
+
+"clear_downloads.title" = "Clear Downloads";
+"clear_downloads.button" = "Clear Downloads";
+"clear_downloads.timeframe" = "Clear Timeframe";
+"clear_downloads.footer" = "Clearing downloads history does not delete files in your Downloads folder.";

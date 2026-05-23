@@ -10,25 +10,25 @@ import UIKit
 final class SearchPreferencesViewController: SettingsTableViewController {
     init() {
         super.init(style: .insetGrouped)
-        title = "Search"
+        title = Strings.Settings.Search.title
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView.reloadData()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         1
     }
-    
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-        cell.textLabel?.text = "Search Engine"
+        cell.textLabel?.text = Strings.Settings.Search.searchEngine
         cell.detailTextLabel?.text = Prefs.SearchSettings.searchEngine.displayName
         cell.detailTextLabel?.textColor = .secondaryLabel
         cell.accessoryType = .disclosureIndicator
@@ -70,7 +70,7 @@ final class SettingsTextFieldCell: UITableViewCell {
 final class SearchEnginePreferencesViewController: SettingsTableViewController, UITextFieldDelegate {
     init() {
         super.init(style: .insetGrouped)
-        title = "Search Engine"
+        title = Strings.Settings.Search.searchEngine
     }
     
     required init?(coder: NSCoder) {
@@ -101,7 +101,7 @@ final class SearchEnginePreferencesViewController: SettingsTableViewController, 
                 return UITableViewCell()
             }
             cell.textField.delegate = self
-            cell.textField.placeholder = "https://example.com/search?q=%s"
+            cell.textField.placeholder = Strings.Settings.Search.searchEnginePlaceholder
             cell.textField.text = Prefs.SearchSettings.customSearchTemplate
             return cell
         }
@@ -134,25 +134,26 @@ final class SearchEnginePreferencesViewController: SettingsTableViewController, 
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        section == 0 ? "Search Engine" : nil
+        section == 0 ? Strings.Settings.Search.searchEngine : nil
     }
-    
+
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         guard section == 1 else { return nil }
-        let baseText = "Enter URL with %s in place of query"
         guard !Prefs.SearchSettings.customSearchTemplate.isEmpty,
-              isValidCustomSearchTemplate(Prefs.SearchSettings.customSearchTemplate) else { return baseText }
-        return "\(baseText). The current value must be a valid http(s) URL."
+              isValidCustomSearchTemplate(Prefs.SearchSettings.customSearchTemplate) else {
+            return Strings.Settings.Search.searchEngineFooterShort
+        }
+        return Strings.Settings.Search.searchEngineFooter
     }
-    
+
     func textFieldDidEndEditing(_ textField: UITextField) {
         Prefs.SearchSettings.customSearchTemplate = textField.text ?? ""
         tableView.reloadData()
         let value = Prefs.SearchSettings.customSearchTemplate
         guard !value.isEmpty, !isValidCustomSearchTemplate(value) else { return }
         presentAlert(
-            title: "Invalid Search URL",
-            message: "Enter a valid http(s) URL containing %s where the search query should go."
+            title: Strings.Settings.Search.invalidURLTitle,
+            message: Strings.Settings.Search.invalidURLMessage
         )
     }
     

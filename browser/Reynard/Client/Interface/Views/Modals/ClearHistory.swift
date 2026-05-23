@@ -20,7 +20,7 @@ final class ClearHistoryViewController: UITableViewController {
         button.layer.cornerRadius = 25
         button.layer.cornerCurve = .continuous
         button.titleLabel?.font = .preferredFont(forTextStyle: .headline)
-        button.setTitle("Clear History", for: .normal)
+        button.setTitle(Strings.ClearHistory.button, for: .normal)
         button.addTarget(self, action: #selector(clearHistory), for: .touchUpInside)
         return button
     }()
@@ -30,7 +30,7 @@ final class ClearHistoryViewController: UITableViewController {
         self.tabCount = tabCount
         self.onClear = onClear
         super.init(style: .insetGrouped)
-        title = "Clear History"
+        title = Strings.ClearHistory.title
     }
     
     required init?(coder: NSCoder) {
@@ -86,35 +86,35 @@ final class ClearHistoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        section == 0 ? "Clear Timeframe" : "Additional Options"
+        section == 0 ? Strings.ClearHistory.timeframe : Strings.ClearHistory.additionalOptions
     }
-    
+
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         guard section == 1 else {
             return nil
         }
-        
-        return "This will close your \(tabCount) \(tabCount == 1 ? "tab" : "tabs")."
+
+        return Strings.ClearHistory.closeTabsFormat(tabCount)
     }
-    
+
     override func tableView(
         _ tableView: UITableView,
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") ?? UITableViewCell(style: .default, reuseIdentifier: "Cell")
-        
+
         if indexPath.section == 0 {
-            cell.textLabel?.text = ["Last hour", "Today", "Today and yesterday", "All history"][indexPath.row]
+            cell.textLabel?.text = [Strings.ClearHistory.lastHour, Strings.ClearHistory.today, Strings.ClearHistory.todayAndYesterday, Strings.ClearHistory.allHistory][indexPath.row]
             cell.accessoryView = nil
             cell.accessoryType = indexPath.row == selectedTimeframeIndex ? .checkmark : .none
             cell.selectionStyle = .default
         } else {
-            cell.textLabel?.text = "Close All Tabs"
+            cell.textLabel?.text = Strings.ClearHistory.closeAllTabs
             cell.accessoryView = closeAllTabsSwitch
             cell.accessoryType = .none
             cell.selectionStyle = .none
         }
-        
+
         return cell
     }
     
