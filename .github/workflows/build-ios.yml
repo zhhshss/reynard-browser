@@ -78,8 +78,14 @@ jobs:
       - name: Install build dependencies
         run: |
           brew update
-          # ldid for ad-hoc signing of dylibs the Gecko build copies in.
-          brew install ldid
+          # ldid: ad-hoc signs dylibs the Gecko build copies in (Reynard's AddGecko.sh).
+          # lld:  used by `clang -fuse-ld=lld` during Gecko link steps.
+          brew install ldid lld
+          # zstandard: mach uses .tar.zst for toolchain artifacts (clang/etc.).
+          # Without it, mach silently fails to unpack toolchain tarballs and the
+          # subsequent `mach build` errors with "Failed to find an adequate linker".
+          python3 -m pip install --upgrade pip
+          python3 -m pip install zstandard
 
       - name: Cache Firefox source submodule
         id: cache-firefox-src
@@ -148,11 +154,23 @@ jobs:
           restore-keys: |
             gecko-build-${{ runner.os }}-${{ steps.gecko-tag.outputs.tag }}-
 
-      - name: Bootstrap mach (install mozbuild deps non-interactively)
+      - name: Fetch Mozilla toolchain artifacts (clang + friends)
         if: ${{ inputs.run_gecko_build }}
         working-directory: engine/firefox
         run: |
-          ./mach --no-interactive bootstrap --application-choice mobile_android || true
+          # We skip `./mach bootstrap` entirely because:
+          #   * Its mobile-android profile downloads ~3 GB of Android NDK/SDK/JDK
+          #     we never use for the iOS target, and license prompts can fail on CI.
+          #   * `mach build` itself triggers `mach configure`, which in turn calls
+          #     `mach artifact toolchain` to pull whatever clang/cbindgen/nasm/etc.
+          #     the current platform needs. As long as zstandard is installed and
+          #     the network reaches firefoxci.taskcluster-artifacts.net, that's
+          #     all we need to bootstrap on a fresh runner.
+          #
+          # We do still call `mach configure` once up-front so toolchain failures
+          # surface here (not buried 30 seconds into the build step), and so the
+          # toolchain dir gets warmed before the cache-saving step at the end.
+          ./mach configure 2>&1 | tail -200
 
       - name: Build Gecko engine
         if: ${{ inputs.run_gecko_build }}
