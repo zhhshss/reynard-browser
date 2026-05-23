@@ -130,10 +130,22 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
+            ~/.cargo/bin
             support/idevice/target
-          key: cargo-${{ runner.os }}-${{ hashFiles('support/idevice/**/Cargo.lock', 'support/idevice/**/Cargo.toml') }}
+          key: cargo-${{ runner.os }}-${{ hashFiles('support/idevice/**/Cargo.lock', 'support/idevice/**/Cargo.toml') }}-v2
           restore-keys: |
             cargo-${{ runner.os }}-
+
+      - name: Install Rust-based build tools (cbindgen)
+        # cbindgen generates C headers from Rust sources during Gecko configure.
+        # `mach bootstrap` normally provides it, but we skip bootstrap to avoid
+        # downloading ~3 GB of Android NDK/SDK we don't need. Placed AFTER the
+        # cargo cache restore so subsequent runs reuse ~/.cargo/bin/cbindgen.
+        run: |
+          if ! command -v cbindgen >/dev/null 2>&1; then
+            cargo install --locked cbindgen
+          fi
+          cbindgen --version
 
       - name: Build idevice FFI library
         run: |
