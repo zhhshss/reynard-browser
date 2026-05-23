@@ -15,6 +15,14 @@ name: iOS Build (Experimental)
 # service with code-signing support (Codemagic, Bitrise, Xcode Cloud).
 
 on:
+  # Auto-run when the workflow file itself changes. This lets the agent push
+  # iterative fixes during CI debugging without requiring a manual UI click,
+  # while normal source-code commits still skip the expensive macOS build.
+  # Remove this trigger once the build is stable.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-ios.yml'
   workflow_dispatch:
     inputs:
       run_gecko_build:
@@ -152,7 +160,7 @@ jobs:
           ./tools/development/build-idevice.sh
 
       - name: Cache Gecko build directory
-        if: ${{ inputs.run_gecko_build }}
+        if: ${{ inputs.run_gecko_build != false }}
         id: cache-gecko-build
         uses: actions/cache@v4
         with:
@@ -167,7 +175,7 @@ jobs:
             gecko-build-${{ runner.os }}-${{ steps.gecko-tag.outputs.tag }}-
 
       - name: Fetch Mozilla toolchain artifacts (clang + friends)
-        if: ${{ inputs.run_gecko_build }}
+        if: ${{ inputs.run_gecko_build != false }}
         working-directory: engine/firefox
         run: |
           # We skip `./mach bootstrap` entirely because:
@@ -185,12 +193,12 @@ jobs:
           ./mach configure 2>&1 | tail -200
 
       - name: Build Gecko engine
-        if: ${{ inputs.run_gecko_build }}
+        if: ${{ inputs.run_gecko_build != false }}
         run: |
           ./tools/development/build-gecko.sh
 
       - name: Inspect Gecko output
-        if: ${{ inputs.run_gecko_build }}
+        if: ${{ inputs.run_gecko_build != false }}
         run: |
           OBJDIR="engine/firefox/obj-aarch64-apple-ios"
           if [ ! -d "$OBJDIR/dist/bin" ]; then
@@ -201,7 +209,7 @@ jobs:
           ls -la "$OBJDIR/dist/bin" | head -40
 
       - name: Run xcodebuild (unsigned)
-        if: ${{ inputs.run_xcodebuild }}
+        if: ${{ inputs.run_xcodebuild != false }}
         working-directory: browser
         env:
           GECKO_DIST: ${{ github.workspace }}/engine/firefox/obj-aarch64-apple-ios/dist
@@ -222,7 +230,7 @@ jobs:
             | xcbeautify || true
 
       - name: Upload .app bundle if built
-        if: ${{ inputs.run_xcodebuild }}
+        if: ${{ inputs.run_xcodebuild != false }}
         uses: actions/upload-artifact@v4
         with:
           name: Reynard-unsigned-app
