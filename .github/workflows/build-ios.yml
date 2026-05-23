@@ -160,7 +160,7 @@ jobs:
           ./tools/development/build-idevice.sh
 
       - name: Cache Gecko build directory
-        if: ${{ inputs.run_gecko_build != false }}
+        if: ${{ github.event_name == 'push' || inputs.run_gecko_build }}
         id: cache-gecko-build
         uses: actions/cache@v4
         with:
@@ -175,7 +175,7 @@ jobs:
             gecko-build-${{ runner.os }}-${{ steps.gecko-tag.outputs.tag }}-
 
       - name: Fetch Mozilla toolchain artifacts (clang + friends)
-        if: ${{ inputs.run_gecko_build != false }}
+        if: ${{ github.event_name == 'push' || inputs.run_gecko_build }}
         working-directory: engine/firefox
         run: |
           # We skip `./mach bootstrap` entirely because:
@@ -193,12 +193,12 @@ jobs:
           ./mach configure 2>&1 | tail -200
 
       - name: Build Gecko engine
-        if: ${{ inputs.run_gecko_build != false }}
+        if: ${{ github.event_name == 'push' || inputs.run_gecko_build }}
         run: |
           ./tools/development/build-gecko.sh
 
       - name: Inspect Gecko output
-        if: ${{ inputs.run_gecko_build != false }}
+        if: ${{ github.event_name == 'push' || inputs.run_gecko_build }}
         run: |
           OBJDIR="engine/firefox/obj-aarch64-apple-ios"
           if [ ! -d "$OBJDIR/dist/bin" ]; then
@@ -209,7 +209,7 @@ jobs:
           ls -la "$OBJDIR/dist/bin" | head -40
 
       - name: Run xcodebuild (unsigned)
-        if: ${{ inputs.run_xcodebuild != false }}
+        if: ${{ github.event_name == 'push' || inputs.run_xcodebuild }}
         working-directory: browser
         env:
           GECKO_DIST: ${{ github.workspace }}/engine/firefox/obj-aarch64-apple-ios/dist
@@ -230,7 +230,7 @@ jobs:
             | xcbeautify || true
 
       - name: Upload .app bundle if built
-        if: ${{ inputs.run_xcodebuild != false }}
+        if: ${{ github.event_name == 'push' || inputs.run_xcodebuild }}
         uses: actions/upload-artifact@v4
         with:
           name: Reynard-unsigned-app
