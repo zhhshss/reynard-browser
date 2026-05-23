@@ -25,6 +25,11 @@ rm -f "$FIREFOX_DIR/.mozconfig"
 	echo "ac_add_options --enable-optimize"
 	echo "ac_add_options --disable-debug"
 	echo "ac_add_options --disable-tests"
+	# Disable wasm-sandboxed libraries (graphite, expat, hunspell, woff2, ogg).
+	# These require a wasi-sysroot toolchain that we don't ship here. The iOS
+	# browser still functions correctly without the sandbox; the libraries
+	# are simply linked natively instead.
+	echo "ac_add_options --without-wasm-sandboxed-libraries"
 } > "$FIREFOX_DIR/.mozconfig"
 
 if ! rustup target list | grep -q "^$TARGET (installed)"; then
