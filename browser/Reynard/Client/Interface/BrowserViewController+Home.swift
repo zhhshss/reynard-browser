@@ -5,6 +5,7 @@
 //  Created by Minh Ton on 5/24/26.
 //
 
+import GeckoView
 import UIKit
 
 extension BrowserViewController: HomeViewDelegate {

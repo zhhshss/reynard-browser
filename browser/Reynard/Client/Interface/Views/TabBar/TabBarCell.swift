@@ -30,6 +30,12 @@ final class TabBarCell: UICollectionViewCell {
     private let swipeCloseVelocityThreshold: CGFloat = 700
     private var swipePanGesture: UIPanGestureRecognizer?
     private var swipeAnimator: UIViewPropertyAnimator?
+    /// Standalone delegate object. UICollectionViewCell already conforms to
+    /// `UIGestureRecognizerDelegate` internally, so a plain extension on the
+    /// cell would trigger "overriding declaration requires 'override'"
+    /// compile errors. Wrapping the protocol on a separate NSObject avoids
+    /// the clash and keeps our gesture logic encapsulated.
+    private lazy var swipeGestureDelegate = SwipeToCloseGestureDelegate(owner: self)
     private lazy var swipeFeedback: UIImpactFeedbackGenerator = {
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.prepare()
@@ -140,7 +146,7 @@ final class TabBarCell: UICollectionViewCell {
         // cell itself (not contentView) so the gesture can translate the
         // entire cell even while the collection view tries to scroll.
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handleSwipeToClose(_:)))
-        pan.delegate = self
+        pan.delegate = swipeGestureDelegate
         pan.maximumNumberOfTouches = 1
         addGestureRecognizer(pan)
         swipePanGesture = pan
@@ -275,34 +281,52 @@ final class TabBarCell: UICollectionViewCell {
     }
 }
 
-extension TabBarCell: UIGestureRecognizerDelegate {
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard let pan = gestureRecognizer as? UIPanGestureRecognizer,
-              pan === swipePanGesture else {
-            return true
+extension TabBarCell {
+    /// Decides whether a pan should begin as a swipe-to-close, and prevents
+    /// it from competing with the collection view's horizontal scroll or
+    /// the close button's tap.
+    fileprivate final class SwipeToCloseGestureDelegate: NSObject, UIGestureRecognizerDelegate {
+        weak var owner: TabBarCell?
+
+        init(owner: TabBarCell) {
+            self.owner = owner
         }
-        // Only begin a swipe-to-close gesture when the user's initial motion
-        // is more vertical than horizontal. This leaves horizontal pans for
-        // the collection view's own scrolling.
-        let velocity = pan.velocity(in: self)
-        return abs(velocity.y) > abs(velocity.x) && abs(velocity.y) > 80
+
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+            guard let owner,
+                  let pan = gestureRecognizer as? UIPanGestureRecognizer,
+                  pan === owner.swipePanGesture else {
+                return true
+            }
+            // Only begin a swipe-to-close gesture when the user's initial motion
+            // is more vertical than horizontal. This leaves horizontal pans for
+            // the collection view's own scrolling.
+            let velocity = pan.velocity(in: owner)
+            return abs(velocity.y) > abs(velocity.x) && abs(velocity.y) > 80
+        }
+
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+        ) -> Bool {
+            // We've already required vertical primacy in `shouldBegin`, so we
+            // never need to share the recognizer with the horizontal scrolling
+            // collection view.
+            false
+        }
+
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer
+        ) -> Bool {
+            // Let the close button's tap recognizer win over our pan.
+            owner?.containsCloseButton(in: otherGestureRecognizer) == true
+        }
     }
 
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
-        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
-    ) -> Bool {
-        // We've already required vertical primacy in `shouldBegin`, so we
-        // never need to share the recognizer with the horizontal scrolling
-        // collection view.
-        false
-    }
-
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
-        shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer
-    ) -> Bool {
-        // Let the close button's tap recognizer win over our pan.
-        otherGestureRecognizer.view === closeButton
+    /// Helper used by the gesture delegate to tell whether another recognizer
+    /// belongs to the cell's internal close button.
+    fileprivate func containsCloseButton(in otherRecognizer: UIGestureRecognizer) -> Bool {
+        otherRecognizer.view === closeButton
     }
 }

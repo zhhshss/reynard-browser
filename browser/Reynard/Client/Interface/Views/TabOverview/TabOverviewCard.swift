@@ -27,6 +27,10 @@ final class TabOverviewCard: UICollectionViewCell {
 
     private var swipePanGesture: UIPanGestureRecognizer?
     private var swipeAnimator: UIViewPropertyAnimator?
+    /// Standalone delegate. UICollectionViewCell already conforms to
+    /// `UIGestureRecognizerDelegate` internally — wrapping our protocol logic
+    /// on a separate NSObject avoids "overriding declaration" compile errors.
+    private lazy var swipeGestureDelegate = SwipeToCloseGestureDelegate(owner: self)
     private lazy var swipeFeedback: UIImpactFeedbackGenerator = {
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.prepare()
@@ -157,7 +161,7 @@ final class TabOverviewCard: UICollectionViewCell {
         // cardView (not contentView) so the recognizer only fires on touches
         // within the visible card rectangle, not over the trailing margin.
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handleSwipeToClose(_:)))
-        pan.delegate = self
+        pan.delegate = swipeGestureDelegate
         pan.maximumNumberOfTouches = 1
         cardView.addGestureRecognizer(pan)
         swipePanGesture = pan
@@ -423,32 +427,45 @@ final class TabOverviewCard: UICollectionViewCell {
     }
 }
 
-extension TabOverviewCard: UIGestureRecognizerDelegate {
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard let pan = gestureRecognizer as? UIPanGestureRecognizer,
-              pan === swipePanGesture else {
-            return true
+extension TabOverviewCard {
+    fileprivate final class SwipeToCloseGestureDelegate: NSObject, UIGestureRecognizerDelegate {
+        weak var owner: TabOverviewCard?
+
+        init(owner: TabOverviewCard) {
+            self.owner = owner
         }
-        // Only start when the gesture is more horizontal than vertical. This
-        // lets the parent vertical scroll view keep its scrolling.
-        let velocity = pan.velocity(in: cardView)
-        return abs(velocity.x) > abs(velocity.y) && abs(velocity.x) > 80
+
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+            guard let owner,
+                  let pan = gestureRecognizer as? UIPanGestureRecognizer,
+                  pan === owner.swipePanGesture else {
+                return true
+            }
+            // Only start when the gesture is more horizontal than vertical. This
+            // lets the parent vertical scroll view keep its scrolling.
+            let velocity = pan.velocity(in: owner.cardView)
+            return abs(velocity.x) > abs(velocity.y) && abs(velocity.x) > 80
+        }
+
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+        ) -> Bool {
+            // Never share with the close button's tap recognizer or with the
+            // collection view's vertical scroll — `shouldBegin` already gated us.
+            false
+        }
+
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer
+        ) -> Bool {
+            // Defer to the close button — a tap there should never become a pan.
+            owner?.closeButtonContains(otherGestureRecognizer) == true
+        }
     }
 
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
-        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
-    ) -> Bool {
-        // Never share with the close button's tap recognizer or with the
-        // collection view's vertical scroll — `shouldBegin` already gated us.
-        false
-    }
-
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
-        shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer
-    ) -> Bool {
-        // Defer to the close button — a tap there should never become a pan.
-        otherGestureRecognizer.view === closeButton
+    fileprivate func closeButtonContains(_ otherRecognizer: UIGestureRecognizer) -> Bool {
+        otherRecognizer.view === closeButton
     }
 }
