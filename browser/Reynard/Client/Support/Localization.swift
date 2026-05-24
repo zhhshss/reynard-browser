@@ -21,7 +21,7 @@ func L(_ key: String, comment: String = "") -> String {
 func L(_ key: String, _ args: CVarArg..., comment: String = "") -> String {
     let template = NSLocalizedString(key, tableName: nil, bundle: .main, value: key, comment: comment)
     return String(format: template, locale: .current, arguments: args)
-
+}
 
 // MARK: - Strongly-Typed Keys
 
