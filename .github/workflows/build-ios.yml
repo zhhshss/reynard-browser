@@ -215,21 +215,79 @@ jobs:
           GECKO_DIST: ${{ github.workspace }}/engine/firefox/obj-aarch64-apple-ios/dist
         run: |
           set -o pipefail
-          xcodebuild \
-            -project Reynard.xcodeproj \
-            -scheme Reynard \
-            -configuration Release \
-            -destination 'generic/platform=iOS' \
-            -derivedDataPath build \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            DEVELOPMENT_TEAM="" \
-            GECKO_DIST="$GECKO_DIST" \
-            EXPANDED_CODE_SIGN_IDENTITY="-" \
-            | xcbeautify || true
+          # Use xcbeautify when available; fall back to raw xcodebuild output
+          # otherwise. The `|| true` that was previously here silently hid
+          # real build failures (we saw an 11 KB "successful" artifact in
+          # run #4 because of that), so we no longer mask the exit code.
+          if command -v xcbeautify >/dev/null 2>&1; then
+            xcodebuild \
+              -project Reynard.xcodeproj \
+              -scheme Reynard \
+              -configuration Release \
+              -destination 'generic/platform=iOS' \
+              -derivedDataPath build \
+              CODE_SIGN_IDENTITY="" \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGNING_ALLOWED=NO \
+              DEVELOPMENT_TEAM="" \
+              GECKO_DIST="$GECKO_DIST" \
+              EXPANDED_CODE_SIGN_IDENTITY="-" \
+              | xcbeautify
+          else
+            xcodebuild \
+              -project Reynard.xcodeproj \
+              -scheme Reynard \
+              -configuration Release \
+              -destination 'generic/platform=iOS' \
+              -derivedDataPath build \
+              CODE_SIGN_IDENTITY="" \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGNING_ALLOWED=NO \
+              DEVELOPMENT_TEAM="" \
+              GECKO_DIST="$GECKO_DIST" \
+              EXPANDED_CODE_SIGN_IDENTITY="-"
+          fi
 
-      - name: Upload .app bundle if built
+      - name: Package .app into .ipa and .tipa
+        if: ${{ github.event_name == 'push' || inputs.run_xcodebuild }}
+        working-directory: browser/build/Build/Products/Release-iphoneos
+        run: |
+          set -euo pipefail
+          if [ ! -d "Reynard.app" ]; then
+            echo "::error::Reynard.app not produced by xcodebuild"
+            ls -la
+            exit 1
+          fi
+          # Standard IPA layout: a Payload directory containing the .app.
+          rm -rf Payload Reynard.ipa Reynard-TrollStore.tipa
+          mkdir Payload
+          cp -R Reynard.app Payload/Reynard.app
+          # Both .ipa and .tipa share the same zip structure. TrollStore just
+          # uses a different extension to disambiguate from regular sideload
+          # IPAs (it also embeds extra entitlements at install time).
+          zip -qry Reynard.ipa Payload
+          cp Reynard.ipa Reynard-TrollStore.tipa
+          ls -lh Reynard.ipa Reynard-TrollStore.tipa
+          # Sanity check: an empty/broken zip would be < 1 MB.
+          MIN_BYTES=$((10 * 1024 * 1024))
+          IPA_SIZE=$(stat -f%z Reynard.ipa)
+          if [ "$IPA_SIZE" -lt "$MIN_BYTES" ]; then
+            echo "::error::Reynard.ipa is only ${IPA_SIZE} bytes — build likely produced an empty .app"
+            exit 1
+          fi
+
+      - name: Upload installable bundles (.ipa and .tipa)
+        if: ${{ github.event_name == 'push' || inputs.run_xcodebuild }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Reynard-unsigned-installable
+          path: |
+            browser/build/Build/Products/Release-iphoneos/Reynard.ipa
+            browser/build/Build/Products/Release-iphoneos/Reynard-TrollStore.tipa
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload raw .app bundle (for debugging)
         if: ${{ github.event_name == 'push' || inputs.run_xcodebuild }}
         uses: actions/upload-artifact@v4
         with:
