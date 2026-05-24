@@ -2,40 +2,68 @@ diff --git a/modules/libpref/init/all.js b/modules/libpref/init/all.js
 index e0b2092b7a92..6c050f3941be 100644
 --- a/modules/libpref/init/all.js
 +++ b/modules/libpref/init/all.js
-@@ -66,6 +66,10 @@ pref("security.crash_tracking.js_load_1.maxCrashes", 1);
- 
+@@ -66,6 +66,38 @@ pref("security.crash_tracking.js_load_1.maxCrashes", 1);
+
  pref("general.useragent.compatMode.firefox", false);
- 
+
 +// REYNARD: Reduce GeckoView logging noise because the default "Debug" level
 +// just makes debugging near to impossible.
 +pref("geckoview.logging", "Warn");
 +
++// REYNARD: iOS scroll feel tuning. The defaults are calibrated for Android,
++// where ~60 Hz touch sampling and a different inertial model are the norm.
++// iOS users expect near-zero input latency and longer inertial coast.
++//
++// `apz.touch_move_tolerance` (default 0.1 device px): how far the finger
++//   must move before APZ accepts the gesture as a pan. Setting to 0 makes
++//   the page follow the finger instantly without a 1-frame "stick".
++// `apz.touch_start_tolerance` (default 0.1): similar, for gesture start.
++// `apz.fling_friction` (default 0.002): higher = stops faster. Lower
++//   matches iOS' long-coast feel.
++// `apz.fling_min_velocity_threshold` (default 0.5 px/ms): velocities below
++//   this don't trigger a fling at all. Lower so light flicks still coast.
++// `apz.fling_stopped_threshold` (default 0.01): below this velocity the
++//   fling is killed. Keep small so coast doesn't feel cut short.
++// `apz.frame_delay.enabled` is already false by default — leave alone.
++// `general.smoothScroll.*` keep enabled for programmatic scrolls (CSS
++//   `scroll-behavior: smooth`, anchor links, JS scrollTo).
++pref("apz.touch_move_tolerance", "0.0");
++pref("apz.touch_start_tolerance", "0.0");
++pref("apz.fling_friction", "0.0017");
++pref("apz.fling_min_velocity_threshold", "0.4");
++pref("apz.fling_stopped_threshold", "0.005");
++pref("apz.fling_curve_function_x1", "0.41");
++pref("apz.fling_curve_function_y1", "0.0");
++pref("apz.fling_curve_function_x2", "0.99");
++pref("apz.fling_curve_function_y2", "1.0");
++pref("apz.fling_curve_threshold_inches_per_ms", "0.01");
++
  pref("general.config.obscure_value", 13); // for MCD .cfg files
- 
+
  // Whether middle button click with a modifier key starts to autoscroll or
-@@ -2537,6 +2541,11 @@ pref("font.size.monospace.x-math", 13);
+@@ -2537,6 +2569,11 @@ pref("font.size.monospace.x-math", 13);
    // For non-Latin/Greek/Cyrillic scripts, there may not be any serif/sans-serif
    // distinction available, so both generics resolve to the same font.
- 
+
 +  // REYNARD: default to sans-serif on iOS so generic resolution uses
 +  // -apple-system first for SF-based text rendering.
 +  pref("font.default.x-unicode", "sans-serif");
 +  pref("font.default.x-western", "sans-serif");
 +
    pref("font.name-list.emoji", "Apple Color Emoji");
- 
+
    pref("font.name-list.serif.ar", "Al Nile");
-@@ -2635,11 +2644,11 @@ pref("font.size.monospace.x-math", 13);
+@@ -2635,11 +2672,11 @@ pref("font.size.monospace.x-math", 13);
    pref("font.name-list.monospace.x-tibt", "Menlo, Kailasa");
- 
+
    pref("font.name-list.serif.x-unicode", "Times New Roman");
 -  pref("font.name-list.sans-serif.x-unicode", "Arial");
 +  pref("font.name-list.sans-serif.x-unicode", "-apple-system, Arial");
    pref("font.name-list.monospace.x-unicode", "Menlo");
- 
+
    pref("font.name-list.serif.x-western", "Times New Roman");
 -  pref("font.name-list.sans-serif.x-western", "Arial");
 +  pref("font.name-list.sans-serif.x-western", "-apple-system, Arial");
    pref("font.name-list.monospace.x-western", "Menlo");
- 
+
    // XXX Is there an alternative that would be better for 'serif'?

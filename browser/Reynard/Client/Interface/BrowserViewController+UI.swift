@@ -303,7 +303,17 @@ final class BrowserUI {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
+
+    /// Native start page that overlays GeckoView when the selected tab has
+    /// no committed URL. Owned by BrowserUI so it shares the same
+    /// constraints as the web view it covers.
+    let homeView: HomeView = {
+        let view = HomeView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        return view
+    }()
+
     let bottomContainer = BottomContainer()
     
     let addressBar: AddressBar = {
@@ -401,6 +411,10 @@ final class BrowserUI {
         
         view.addSubview(ui.bottomContainer.bottomSafeAreaFillView)
         view.addSubview(ui.geckoView)
+        // HomeView is inserted directly above the GeckoView so it pins to the
+        // exact same edges (we'll constrain it to geckoView below) and remains
+        // beneath every chrome layer (top bar, bottom bar, tab overview).
+        view.addSubview(ui.homeView)
         view.addSubview(ui.bottomContainer.containerView)
         view.addSubview(ui.topBar.safeAreaFillView)
         ui.bottomContainer.containerView.addSubview(ui.addressBar)
@@ -437,7 +451,16 @@ final class BrowserUI {
         ui.geckoTrailingPadConstraint = ui.geckoView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ui.geckoTopFullscreenConstraint = ui.geckoView.topAnchor.constraint(equalTo: view.topAnchor)
         ui.geckoBottomFullscreenConstraint = ui.geckoView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        
+
+        // HomeView pins to GeckoView so it tracks any chrome/keyboard insets
+        // already applied via geckoView's active constraint variants.
+        NSLayoutConstraint.activate([
+            ui.homeView.topAnchor.constraint(equalTo: ui.geckoView.topAnchor),
+            ui.homeView.bottomAnchor.constraint(equalTo: ui.geckoView.bottomAnchor),
+            ui.homeView.leadingAnchor.constraint(equalTo: ui.geckoView.leadingAnchor),
+            ui.homeView.trailingAnchor.constraint(equalTo: ui.geckoView.trailingAnchor),
+        ])
+
         ui.bottomContainerBottomConstraint = ui.bottomContainer.containerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ui.bottomContainerHeightConstraint = ui.bottomContainer.containerView.heightAnchor.constraint(equalToConstant: 94)
         ui.bottomToolbarHeightConstraint = ui.bottomToolbar.heightAnchor.constraint(equalToConstant: 30)

@@ -2,13 +2,29 @@ diff --git a/mobile/ios/app/mobile.js b/mobile/ios/app/mobile.js
 index e835b1c33d86..d89e1b8a9d74 100644
 --- a/mobile/ios/app/mobile.js
 +++ b/mobile/ios/app/mobile.js
-@@ -5,6 +5,36 @@
- 
+@@ -5,6 +5,46 @@
+
  pref("toolkit.defaultChromeURI", "chrome://geckoview/content/geckoview.xhtml");
- 
-+// Firefox add-on support, copied from Android's.
-+pref("extensions.isembedded", true);
-+pref("extensions.autoDisableScopes", 15);
+
++// REYNARD: Localization fallbacks for the iOS port.
++//
++// Gecko on iOS only ships the en-US locale package, so the default
++// `intl.accept_languages` would always be "en-US, en". We override it with a
++// pragmatic Chinese-first list with English fallback (q-values handle the
++// rest), which matches the upstream maintainer's audience and is harmless to
++// other users (servers fall back to en;q=0.7).
++//
++// `intl.regional_prefs.use_os_locales = true` makes date/number/currency
++// formatting follow the OS locale instead of the bundled locale, which is the
++// right thing to do on iOS where the user already chose a system region.
++// Combined with the LANG/LC_MESSAGES env vars exported from main.swift,
++// regional formatting effectively follows the system.
++pref("intl.accept_languages", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7");
++pref("intl.regional_prefs.use_os_locales", true);
++
+ // Firefox add-on support, copied from Android's.
+ pref("extensions.isembedded", true);
+ pref("extensions.autoDisableScopes", 15);
 +pref("extensions.enabledScopes", 5);
 +pref("extensions.experiments.enabled", false);
 +pref("extensions.getAddons.browseAddons", "https://addons.mozilla.org/%LOCALE%/android/collections/4757633/mob/?page=1&collection_sort=-popularity");

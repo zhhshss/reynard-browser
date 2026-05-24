@@ -22,6 +22,16 @@ final class TabOverviewCard: UICollectionViewCell {
     private let liftedShadowOffset = CGSize(width: 0, height: 6)
     
     var onClose: (() -> Void)?
+
+    // MARK: - Swipe to close state
+
+    private var swipePanGesture: UIPanGestureRecognizer?
+    private var swipeAnimator: UIViewPropertyAnimator?
+    private lazy var swipeFeedback: UIImpactFeedbackGenerator = {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        return generator
+    }()
     
     private let previewShadowView: UIView = {
         let view = UIView()
@@ -142,6 +152,15 @@ final class TabOverviewCard: UICollectionViewCell {
         titleStackView.addArrangedSubview(titleLabel)
         
         closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
+
+        // Safari-style horizontal swipe to dismiss the card. We attach to the
+        // cardView (not contentView) so the recognizer only fires on touches
+        // within the visible card rectangle, not over the trailing margin.
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(handleSwipeToClose(_:)))
+        pan.delegate = self
+        pan.maximumNumberOfTouches = 1
+        cardView.addGestureRecognizer(pan)
+        swipePanGesture = pan
         
         let cardTopConstraint = cardView.topAnchor.constraint(equalTo: contentView.topAnchor)
         let cardLeadingConstraint = cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor)
@@ -229,6 +248,11 @@ final class TabOverviewCard: UICollectionViewCell {
         contentView.alpha = 1
         previewShadowView.layer.shadowColor = UITraitCollection.current.userInterfaceStyle == .dark ? UIColor.white.cgColor : UIColor.black.cgColor
         setReorderLifted(false, animated: false)
+        // Reset any in-flight swipe state so a recycled card starts clean.
+        swipeAnimator?.stopAnimation(true)
+        swipeAnimator = nil
+        cardView.transform = .identity
+        cardView.alpha = 1
     }
     
     func configure(tab: Tab) {
@@ -321,5 +345,110 @@ final class TabOverviewCard: UICollectionViewCell {
     
     @objc private func closeTapped() {
         onClose?()
+    }
+
+    // MARK: - Swipe to Close
+
+    /// Horizontal pan distance (in points) past which a release counts as a
+    /// definitive close.
+    private static let swipeCloseDistanceThreshold: CGFloat = 80
+    /// Horizontal velocity (points/sec) past which we close even on a
+    /// shorter pan — matches Safari's flick-to-dismiss feel.
+    private static let swipeCloseVelocityThreshold: CGFloat = 900
+
+    @objc private func handleSwipeToClose(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: cardView)
+        let velocity = gesture.velocity(in: cardView)
+
+        switch gesture.state {
+        case .began:
+            swipeAnimator?.stopAnimation(true)
+            swipeAnimator = nil
+
+        case .changed:
+            // Left swipe = primary direction (mirrors Safari). Right swipes
+            // get a rubber-banded resistance instead of moving 1:1, so users
+            // don't accidentally fling cards to the right.
+            let dx = translation.x
+            let absorbed = dx <= 0 ? dx : dx * 0.35
+            cardView.transform = CGAffineTransform(translationX: absorbed, y: 0)
+            let progress = max(0, min(1, abs(absorbed) / 160))
+            cardView.alpha = 1 - 0.6 * progress
+
+        case .ended, .cancelled:
+            let exitingLeft = translation.x < 0
+            let shouldClose = gesture.state != .cancelled
+                && exitingLeft
+                && (abs(translation.x) > Self.swipeCloseDistanceThreshold
+                    || velocity.x < -Self.swipeCloseVelocityThreshold)
+            if shouldClose {
+                swipeFeedback.impactOccurred()
+                let exitOffset = -(bounds.width + 32)
+                swipeAnimator = UIViewPropertyAnimator(
+                    duration: 0.25,
+                    controlPoint1: CGPoint(x: 0.4, y: 0),
+                    controlPoint2: CGPoint(x: 1, y: 1)
+                )
+                swipeAnimator?.addAnimations { [weak self] in
+                    guard let self else { return }
+                    self.cardView.transform = CGAffineTransform(translationX: exitOffset, y: 0)
+                    self.cardView.alpha = 0
+                }
+                swipeAnimator?.addCompletion { [weak self] _ in
+                    guard let self else { return }
+                    self.onClose?()
+                    // If the collection view keeps the cell around (e.g. while
+                    // the close handler animates the removal), revert the
+                    // visual state so the cell doesn't show as a missing slot.
+                    self.cardView.transform = .identity
+                    self.cardView.alpha = 1
+                }
+                swipeAnimator?.startAnimation()
+            } else {
+                UIView.animate(
+                    withDuration: 0.32,
+                    delay: 0,
+                    usingSpringWithDamping: 0.78,
+                    initialSpringVelocity: 0.4,
+                    options: [.beginFromCurrentState, .allowUserInteraction]
+                ) { [weak self] in
+                    self?.cardView.transform = .identity
+                    self?.cardView.alpha = 1
+                }
+            }
+
+        default:
+            break
+        }
+    }
+}
+
+extension TabOverviewCard: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let pan = gestureRecognizer as? UIPanGestureRecognizer,
+              pan === swipePanGesture else {
+            return true
+        }
+        // Only start when the gesture is more horizontal than vertical. This
+        // lets the parent vertical scroll view keep its scrolling.
+        let velocity = pan.velocity(in: cardView)
+        return abs(velocity.x) > abs(velocity.y) && abs(velocity.x) > 80
+    }
+
+    func gestureRecognizer(
+        _ gestureRecognizer: UIGestureRecognizer,
+        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+    ) -> Bool {
+        // Never share with the close button's tap recognizer or with the
+        // collection view's vertical scroll — `shouldBegin` already gated us.
+        false
+    }
+
+    func gestureRecognizer(
+        _ gestureRecognizer: UIGestureRecognizer,
+        shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer
+    ) -> Bool {
+        // Defer to the close button — a tap there should never become a pan.
+        otherGestureRecognizer.view === closeButton
     }
 }

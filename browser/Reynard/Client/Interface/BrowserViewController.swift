@@ -84,6 +84,7 @@ final class BrowserViewController: UIViewController {
         restoreTabOverviewMode()
         syncBrowserNavigationChrome(animated: false)
         syncSidebarButtonItem()
+        setupHomeView()
         
         if AppUpdates.shared.hasUpdate {
             applyUpdateMenuButtonBadge()

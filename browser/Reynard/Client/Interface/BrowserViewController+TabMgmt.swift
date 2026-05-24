@@ -154,12 +154,12 @@ extension BrowserViewController: TabManagerDelegate {
             selectedIndex: tabManager.selectedTabIndex,
             pendingExpandedIndex: pendingExpandedTabBarIndex
         )
-        
         if isInFullscreenMedia,
            activeFullscreenSession !== selectedTab.session {
             applyFullscreenState(false, for: activeFullscreenSession)
         }
         pendingSelectionAnimation = false
+        refreshHomeViewVisibility()
     }
     
     func tabManager(_ tabManager: TabManager, didRequestContextMenuAt point: CGPoint, for element: ContextElement, in session: GeckoSession) {
@@ -211,6 +211,7 @@ extension BrowserViewController: TabManagerDelegate {
             if index == tabManager.selectedTabIndex {
                 refreshAddressBar()
                 updateNavigationButtons()
+                refreshHomeViewVisibility()
             }
             
         case .favicon:
