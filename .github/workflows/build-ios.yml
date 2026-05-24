@@ -252,6 +252,8 @@ jobs:
       - name: Package .app into .ipa and .tipa
         if: ${{ github.event_name == 'push' || inputs.run_xcodebuild }}
         working-directory: browser/build/Build/Products/Release-iphoneos
+        env:
+          ROOT_DIR: ${{ github.workspace }}
         run: |
           set -euo pipefail
           if [ ! -d "Reynard.app" ]; then
@@ -259,23 +261,61 @@ jobs:
             ls -la
             exit 1
           fi
-          # Standard IPA layout: a Payload directory containing the .app.
+
+          # ---------- 1. Plain .ipa (no special entitlements) ----------
+          # AltStore/SideStore users will re-sign this with their Apple ID.
           rm -rf Payload Reynard.ipa Reynard-TrollStore.tipa
           mkdir Payload
           cp -R Reynard.app Payload/Reynard.app
-          # Both .ipa and .tipa share the same zip structure. TrollStore just
-          # uses a different extension to disambiguate from regular sideload
-          # IPAs (it also embeds extra entitlements at install time).
-          zip -qry Reynard.ipa Payload
-          cp Reynard.ipa Reynard-TrollStore.tipa
+          zip -qry Reynard.ipa Payload -x "._*" -x ".DS_Store" -x "__MACOSX"
+
+          # ---------- 2. Compile the ptrace_jit helper binary ----------
+          # This tiny C helper requests JIT memory via ptrace tricks; it's
+          # invoked by Reynard on launch when running under TrollStore.
+          # Without it, the .tipa works but JIT is unavailable.
+          CLANG_PATH="$(xcrun --sdk iphoneos --find clang)"
+          SDK_PATH="$(xcrun --sdk iphoneos --show-sdk-path)"
+          PTRACE_SRC="$ROOT_DIR/browser/Reynard/TrollStore/JIT/ptrace_jit.c"
+          PTRACE_OUT="Payload/Reynard.app/ptrace_jit"
+          "$CLANG_PATH" \
+            -arch arm64 \
+            -isysroot "$SDK_PATH" \
+            -miphoneos-version-min=13.0 \
+            -Os \
+            "$PTRACE_SRC" \
+            -o "$PTRACE_OUT"
+          chmod 0755 "$PTRACE_OUT"
+
+          # ---------- 3. Inject .private entitlements with ldid ----------
+          # ldid replaces the existing ad-hoc signature with a new ad-hoc
+          # signature that embeds these entitlements. TrollStore detects
+          # them at install time and shows the "Special Permissions" prompt.
+          PRIV_MAIN="$ROOT_DIR/browser/Reynard/Entitlements/Reynard.private.entitlements"
+          PRIV_HELPER="$ROOT_DIR/browser/Helper/Entitlements/Reynard-Helper.private.entitlements"
+          PRIV_PTRACE="$ROOT_DIR/browser/Reynard/TrollStore/JIT/ptrace_jit.entitlements"
+          ldid -S"$PRIV_PTRACE" "$PTRACE_OUT"
+          ldid -S"$PRIV_MAIN" "Payload/Reynard.app/Reynard"
+          ldid -S"$PRIV_HELPER" "Payload/Reynard.app/PlugIns/Reynard Helper.appex/Reynard Helper"
+
+          # ---------- 4. Zip the TrollStore bundle ----------
+          zip -qry Reynard-TrollStore.tipa Payload -x "._*" -x ".DS_Store" -x "__MACOSX"
+
           ls -lh Reynard.ipa Reynard-TrollStore.tipa
-          # Sanity check: an empty/broken zip would be < 1 MB.
+          # Sanity check: both bundles must be plausibly sized.
           MIN_BYTES=$((10 * 1024 * 1024))
-          IPA_SIZE=$(stat -f%z Reynard.ipa)
-          if [ "$IPA_SIZE" -lt "$MIN_BYTES" ]; then
-            echo "::error::Reynard.ipa is only ${IPA_SIZE} bytes — build likely produced an empty .app"
-            exit 1
-          fi
+          for f in Reynard.ipa Reynard-TrollStore.tipa; do
+            SIZE=$(stat -f%z "$f")
+            if [ "$SIZE" -lt "$MIN_BYTES" ]; then
+              echo "::error::$f is only ${SIZE} bytes — build likely produced an empty .app"
+              exit 1
+            fi
+          done
+
+          # ---------- 5. Verify the entitlements landed ----------
+          echo "=== Entitlements embedded in Reynard binary ==="
+          ldid -e "Payload/Reynard.app/Reynard" || true
+          echo "=== Entitlements embedded in ptrace_jit binary ==="
+          ldid -e "Payload/Reynard.app/ptrace_jit" || true
 
       - name: Upload installable bundles (.ipa and .tipa)
         if: ${{ github.event_name == 'push' || inputs.run_xcodebuild }}
